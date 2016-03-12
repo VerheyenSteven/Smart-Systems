@@ -15,6 +15,7 @@ int RledState = LOW;
 int LledState = LOW;
 
 int hoekServo = 35;
+int hoekServoRondkijken = 90;
 
 #define echoPin A0 // Echo Pin
 #define trigPin A1 // Trigger Pin
@@ -33,6 +34,8 @@ bool vooruitRijden = LOW;
 bool achteruitRijden= LOW;
 bool linksRijden = LOW;
 bool rechtsRijden = LOW;
+bool rondKijken = LOW;
+bool vooruitKijken = HIGH;
 
 int LmotorA= 5;  // Left  motor H bridge, input A
 int LmotorB = 6;  // Left  motor H bridge, input B
@@ -139,9 +142,10 @@ void loop() {
        previousMillisServo = currentMillisServo;     
        myservo.write(pos);  
        
-       
+       if(vooruitKijken){
        pos += hoekServo;
        if(pos >= 125 || pos<= 55)hoekServo = hoekServo*-1;
+       }
        
        }
      }
@@ -149,42 +153,34 @@ void loop() {
      previousMillisSensor = currentMillisSensor; 
      Distance(); 
      
-     if (pos >= 55 && pos <= 125 && distance <= 10 && distance > 0) {
-        if(pos==55){
-        linksRijden==HIGH;
-         Serial.println(linksRijden);
+     if (pos >= 55 && pos <= 125 && distance <= 10 && distance > 0) {        
+       vooruitRijden = LOW;
+       //rondKijken = HIGH;
+       //vooruitKijken = LOW;
+       Serial.println("STOP");
       }
-        if(pos==125)rechtsRijden==HIGH;
-       // if(pos==90)vooruitRijden = LOW;
-
-     }  
+       
      else if (pos >= 55 && pos <= 125 && distance > 10 || distance == -1) {
 
        vooruitRijden = HIGH;
+       //rondKijken = LOW;
        Serial.println("DRIVE");
      }
-  }
+     }
     
   
   if(vooruitRijden){
          Snelheid = 2000;
          Stuur = 1500;
   }
-  if(rechtsRijden){
-      Serial.println("rechts");
-      Snelheid = 2000;
-      Stuur = 1300;
-
+  
+  if(rondKijken) {
+    pos += hoekServoRondkijken;
+       if(pos >= 180 || pos<= 0)hoekServoRondkijken = hoekServoRondkijken*-1;
+       //if (pos == 90 && distance > 10 || distance == -1) vooruitKijken = HIGH;
+       //if (pos == 0 && distance > 10 || distance == -1) { Stuur = 2000; Snelheid = 1500;}
     }
-  if(linksRijden){
-    Serial.println("links");
-    Snelheid = 2000;
-    Stuur = 1700;
-
-  }
-  
-  
-  
+    
    
     Pinkers(Stuur, currentMillis);
     //------------------------------------------------------------ Code voor RC inputs. ---------------------------------------------------------
@@ -279,12 +275,12 @@ void Distance() {
    Serial.println("-1");
    digitalWrite(timeOutPin, LOW);
  }
-   else {
+ else {
  /* Send the distance to the computer using Serial protocol, and
  turn LED OFF to indicate successful reading. */
    Serial.println(distance);
-   }
-   digitalWrite(timeOutPin, HIGH);
+ }
+  digitalWrite(timeOutPin, HIGH);
 }
  
  void Pinkers(int Stuur, unsigned long currentMillis){ 
