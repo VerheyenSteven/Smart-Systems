@@ -4,6 +4,7 @@ Servo myservo;  // create servo object to control a servo
                 // twelve servo objects can be created on most boards
  
 int pos = 90;    // variable to store the servo position 
+int count = 0;
 
 //pinkers
 int Lpinker = 4; // Linker pinker
@@ -34,8 +35,9 @@ bool vooruitRijden = LOW;
 bool achteruitRijden= LOW;
 bool linksRijden = LOW;
 bool rechtsRijden = LOW;
-bool rondKijken = LOW;
+bool rechtsKijken = LOW;
 bool vooruitKijken = HIGH;
+bool rechtsDraaien = LOW;
 
 int LmotorA= 5;  // Left  motor H bridge, input A
 int LmotorB = 6;  // Left  motor H bridge, input B
@@ -142,29 +144,32 @@ void loop() {
        previousMillisServo = currentMillisServo;     
        myservo.write(pos);  
        
-       if(vooruitKijken){
-       pos += hoekServo;
-       if(pos >= 125 || pos<= 55)hoekServo = hoekServo*-1;
-       }
-       
-       }
+       if(vooruitKijken)
+       {         
+         pos += hoekServo;
+         if(pos >= 125 || pos <= 55) hoekServo = hoekServo*-1;
+       }       
      }
+     
    if (currentMillisSensor - previousMillisSensor >= intervalSensor) {
      previousMillisSensor = currentMillisSensor; 
      Distance(); 
      
-     if (pos >= 55 && pos <= 125 && distance <= 10 && distance > 0) {        
-       vooruitRijden = LOW;
-       //rondKijken = HIGH;
-       //vooruitKijken = LOW;
+     if (pos >= 55 && pos <= 125 && distance <= 10 && distance > 0) {
+       count += 1;       
+       vooruitRijden = LOW;       
+       if (count >= 5) rechtsKijken = HIGH;
+       
        Serial.println("STOP");
+       
       }
        
      else if (pos >= 55 && pos <= 125 && distance > 10 || distance == -1) {
-
+        count = 0;
        vooruitRijden = HIGH;
        //rondKijken = LOW;
        Serial.println("DRIVE");
+     }
      }
      }
     
@@ -174,12 +179,47 @@ void loop() {
          Stuur = 1500;
   }
   
-  if(rondKijken) {
-    pos += hoekServoRondkijken;
-       if(pos >= 180 || pos<= 0)hoekServoRondkijken = hoekServoRondkijken*-1;
-       //if (pos == 90 && distance > 10 || distance == -1) vooruitKijken = HIGH;
-       //if (pos == 0 && distance > 10 || distance == -1) { Stuur = 2000; Snelheid = 1500;}
+  if(rechtsKijken) {
+    vooruitKijken = LOW;
+    Serial.println("rechtskijken");
+    Serial.println(distance);
+    Serial.println(pos);
+    pos = 0;
+     if ( pos == 0 && distance >= 10 || distance == -1)
+     {
+       Snelheid = 1500;
+       Stuur = 2000; 
+       rechtsDraaien = HIGH;
+       
+       Serial.println("rechtsdraaien"); 
+      //  vooruitKijken = HIGH;     
+     }   
+    /* else 
+     {
+       pos = 180;
+       Serial.println("Linkskijken");
+       
+       if (pos == 180 && distance >= 20 ||distance == -1)
+       {
+         Snelheid = 1500;
+         Stuur = 1000;
+         Serial.println("Linksdraaien");
+         vooruitKijken = HIGH;
+       }       
+       else vooruitKijken = HIGH;
+     }*/
+  }
+  
+  if (rechtsDraaien) 
+  {
+    pos = 90;
+    Serial.println("Rechtsdraaien");
+    if (pos == 90 && distance >= 30 || distance == -1)
+    {
+      rechtsKijken = LOW;
+      vooruitKijken = HIGH;
     }
+  }
     
    
     Pinkers(Stuur, currentMillis);
