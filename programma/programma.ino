@@ -20,12 +20,12 @@ void setup() {
   radio.begin();                  // voor de RF module te openen
   radio.openReadingPipe(1,pipe);
   radio.startListening();
-  /*
+  
   myservo.attach(3);              // attaches the servo on pin 9 to the servo object 
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(timeOutPin, OUTPUT);
-  */
+  
 
 }
 
@@ -57,7 +57,7 @@ void loop() {
     }
 
 
-    /*else {
+   else {
       if(currentMillis - previousMillisServo >= intervalServo) {
        
        previousMillisServo = currentMillis;           //zet om de zoveel tijd de positie van de servomotor anders.  
@@ -113,7 +113,7 @@ void loop() {
        Serial.println("rechtsdraaien"); 
       //  vooruitKijken = HIGH;     
      }   
-    /* else 
+   else 
      {
        pos = 180;
        Serial.println("Linkskijken");
