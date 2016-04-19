@@ -139,9 +139,10 @@ void loop() {
       vooruitKijken = HIGH;
     }
   }
-  */
+  
    
     Pinkers(Stuur, currentMillis);
+    
     //------------------------------------------------------------ Code voor RC inputs. ---------------------------------------------------------
 
 
@@ -208,6 +209,8 @@ void loop() {
     break;
   }
 }
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 void Distance() { // meet de afstand van de sensor
   
@@ -236,7 +239,9 @@ void Distance() { // meet de afstand van de sensor
  }
   digitalWrite(timeOutPin, HIGH);
 }
- 
+
+
+ //--------------------------------------------code voor de pinkers ----------------------------------------------------
  void Pinkers(int Stuur, unsigned long currentMillis){ // laat de pinkers pinken
    
    if (Stuur > 1550){ // als de wagen naar rechts gaat, rechter pinkers pinken
@@ -281,3 +286,4 @@ void Distance() { // meet de afstand van de sensor
         digitalWrite(Lpinker, LledState);             
       } 
 }
+//----------------------------------------------------------------------------------------------------------------------------
