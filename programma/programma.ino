@@ -55,7 +55,7 @@ void loop() {
       Stuur  = (input[2])+1000;     // geeft de geontvangde data door aan stuur.
       Serial.print("\n\n"); 
     }
-
+//ftgyhuji
 
    else {
       if(currentMillis - previousMillisServo >= intervalServo) {

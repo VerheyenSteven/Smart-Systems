@@ -27,7 +27,7 @@ bool linksRijden = LOW;
 bool rechtsRijden = LOW;
 bool rechtsKijken = LOW;
 bool vooruitKijken = HIGH;
-//bool rechtsDraaien = LOW;
+bool rechtsDraaien = LOW;
 
 int linksemodus=1;                         // 0=achterwaards, 1=rem, 2=voorwaards.
 int rechtsemodus=1;                        // 0=achterwaards, 1=rem, 2=voorwaards.
