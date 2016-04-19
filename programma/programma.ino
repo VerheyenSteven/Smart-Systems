@@ -1,123 +1,40 @@
 #include <Servo.h> 
+#include "IOpins.h"
+#include "Constants.h"
  
-Servo myservo;  // create servo object to control a servo 
-                // twelve servo objects can be created on most boards
- 
-int pos = 90;    // variable to store the servo position 
-int count = 0;
-
-//pinkers
-int Lpinker = 4; // Linker pinker
-int Rpinker = 2; // Rechter pinker
-
-unsigned long previousMillis = 0;  // will store last time LED was updated
-const long interval = 250; // interval at which to blink (milliseconds)
-int RledState = LOW;
-int LledState = LOW;
-
-int hoekServo = 35;
-int hoekServoRondkijken = 90;
-
-#define echoPin A0 // Echo Pin
-#define trigPin A1 // Trigger Pin
-#define timeOutPin A5
-
-int maximumRange = 200; // Maximum range needed
-int minimumRange = 0; // Minimum range needed
-long duration, distance; // Duration used to calculate distance
-
-unsigned long previousMillisServo = 0;  // will store last time LED was updated
-const long intervalServo = 1000; // interval at which to blink (milliseconds)
-unsigned long previousMillisSensor =0;
-const long intervalSensor = 300;
- 
-bool vooruitRijden = LOW;
-bool achteruitRijden= LOW;
-bool linksRijden = LOW;
-bool rechtsRijden = LOW;
-bool rechtsKijken = LOW;
-bool vooruitKijken = HIGH;
-bool rechtsDraaien = LOW;
-
-int LmotorA= 5;  // Left  motor H bridge, input A
-int LmotorB = 6;  // Left  motor H bridge, input B
-int RmotorA =9;  // Right motor H bridge, input A
-int RmotorB =10;  // Right motor H bridge, input B
-
-//int RCleft = 12;  // Digital input 10
-//int RCright = 10;  // Digital input 12
-
-int linksemodus=1;                                             // 0=achterwaards, 1=rem, 2=voorwaards.
-int rechtsemodus=1;                                            // 0=achterwaards, 1=rem, 2=voorwaards.
-
-int Mix = 1;     // Set to 1 if L/R and F/R signals from RC need to be mixed
-int Leftcenter  = 1500;     // when RC inputs are centered then input should be 1.5mS
-int Rightcenter = 1500; // when RC inputs are centered then input should be 1.5mS
-int RCdeadband = 35;     // inputs do not have to be perfectly centered to stop motors
-
-int linksePWM;                                                 // PWM waarde voor de linkse motor snelheid/rem.
-int rechtsePWM;                                                // PWM waarde voor de rechtse motor snelheid/rem.
-
-int LinkseSnelheid=0;
-int RechtseSnelheid=0;
-int Snelheid = 1500;
-int Stuur = 1500;
-
-int scale=12;  
-
-unsigned long linkseoverbelasting;
-unsigned long rechtseoverbelasting;
-
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
 
-/*-----( Declare Constants and Pin Numbers )-----*/
-#define CE_PIN   7
-#define CSN_PIN 8
-
-// NOTE: the "LL" at the end of the constant is "LongLong" type
-const uint64_t pipe = 0xE8E8F0F0E1LL; // Define the transmit pipe
-
-
 /*-----( Declare objects )-----*/
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
-
-/*-----( Declare Variables )-----*/
-int input[3];
-int done;
-
 
 void setup() {
  
   Serial.begin(9600);
-
-
-  pinMode(LmotorA,OUTPUT);
+  pinMode(LmotorA,OUTPUT);        // zet de pinnen voor de H brug op output
   pinMode(RmotorA,OUTPUT);
   pinMode(LmotorB,OUTPUT);
   pinMode(RmotorB,OUTPUT);
 
-  radio.begin();
+  radio.begin();                  // voor de RF module te openen
   radio.openReadingPipe(1,pipe);
   radio.startListening();
-  
-  myservo.attach(3);  // attaches the servo on pin 9 to the servo object 
+  /*
+  myservo.attach(3);              // attaches the servo on pin 9 to the servo object 
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(timeOutPin, OUTPUT);
-  
+  */
 
 }
 
 void loop() {
-   Snelheid = 1500;
-   Stuur = 1500;
-   unsigned long currentMillis = millis();
-   unsigned long currentMillisServo = millis();
-   unsigned long currentMillisSensor = millis();
+   Snelheid = 1500;             // zet snelheid in de center positie
+   Stuur = 1500;                // zet stuur in de center positie
+   unsigned long currentMillis = millis(); // wordt gebruikt voor verschillende time-outs
   
-  if (radio.available() )
+  if (radio.available() )       // kijkt of er een RF signaal is
   {
     vooruitRijden = LOW;
     Serial.println("Het werkt");
@@ -129,48 +46,50 @@ void loop() {
       Serial.print("Switch:  ");
       Serial.print(input[0]);
       
-      Snelheid= (input[1])+1000;
+      Snelheid= (input[1])+1000;     // geeft de geontvangde data door aan snelheid.
       
       Serial.print(input[1]);
       Serial.print("\n");
       Serial.print("Y-axis: ");
       Serial.println(input[2]);
-      Stuur  = (input[2])+1000;
+      Stuur  = (input[2])+1000;     // geeft de geontvangde data door aan stuur.
       Serial.print("\n\n"); 
     }
-    else {
-      if(currentMillisServo - previousMillisServo >= intervalServo) {
+
+
+    /*else {
+      if(currentMillis - previousMillisServo >= intervalServo) {
        
-       previousMillisServo = currentMillisServo;     
+       previousMillisServo = currentMillis;           //zet om de zoveel tijd de positie van de servomotor anders.  
        myservo.write(pos);  
        
        if(vooruitKijken)
        {         
-         pos += hoekServo;
-         if(pos >= 125 || pos <= 55) hoekServo = hoekServo*-1;
+         pos += hoekServo;                            //schuift de servomotor op
+         if(pos >= 125 || pos <= 55) hoekServo = hoekServo*-1; 
        }       
      }
      
-   if (currentMillisSensor - previousMillisSensor >= intervalSensor) {
-     previousMillisSensor = currentMillisSensor; 
-     Distance(); 
-     
-     if (pos >= 55 && pos <= 125 && distance <= 10 && distance > 0) {
-       count += 1;       
-       vooruitRijden = LOW;       
-       if (count >= 5) rechtsKijken = HIGH;
-       
-       Serial.println("STOP");
-       
-      }
-       
-     else if (pos >= 55 && pos <= 125 && distance > 10 || distance == -1) {
-        count = 0;
-       vooruitRijden = HIGH;
-       //rondKijken = LOW;
-       Serial.println("DRIVE");
-     }
-     }
+     if (currentMillis - previousMillisSensor >= intervalSensor) {
+         previousMillisSensor = currentMillis; 
+         Distance();                                   //als de servomotor in positie is kijk de distance 
+         
+         if (pos >= 55 && pos <= 125 && distance <= 10 && distance > 0) { //als hij voor hem iets detecteerd
+             count += 1;       
+             vooruitRijden = LOW;       
+             if (count >= 5) rechtsKijken = HIGH;
+             
+             Serial.println("STOP");
+             
+          }
+           
+         else if (pos >= 55 && pos <= 125 && distance > 10 || distance == -1) { //als er geen obstakels zijn vooruit rijden
+              count = 0;
+             vooruitRijden = HIGH;
+             //rondKijken = LOW;
+             Serial.println("DRIVE");
+         }
+       }
      }
     
   
@@ -185,7 +104,7 @@ void loop() {
     Serial.println(distance);
     Serial.println(pos);
     pos = 0;
-     if ( pos == 0 && distance >= 10 || distance == -1)
+     if ( pos == 0 && distance >= 10 || distance == -1) //als hij links iets detecteerd zal hij naar rechts begeven.
      {
        Snelheid = 1500;
        Stuur = 2000; 
@@ -207,7 +126,7 @@ void loop() {
          vooruitKijken = HIGH;
        }       
        else vooruitKijken = HIGH;
-     }*/
+     }
   }
   
   if (rechtsDraaien) 
@@ -220,7 +139,7 @@ void loop() {
       vooruitKijken = HIGH;
     }
   }
-    
+  */
    
     Pinkers(Stuur, currentMillis);
     //------------------------------------------------------------ Code voor RC inputs. ---------------------------------------------------------
@@ -229,17 +148,12 @@ void loop() {
   if (abs(Snelheid-1500)<RCdeadband) Snelheid=1500;           // Als de snelheid input in de speling is dan zet men het op 1500 (standaard waarde voor meeste servo's). 
   if (abs(Stuur-1500)<RCdeadband) Stuur=1500;                 // Als de sturing input in de speling is dan zet men het op 1500 (standaard waarde voor meeste servo's).
 
-  if (Mix==1)                                                 // Mengt de snelheid en de stuur signalen.
-  {
-    Stuur=Stuur-1500;
-    LinkseSnelheid=Snelheid-Stuur;
-    RechtseSnelheid=Snelheid+Stuur;
-  }
-  else                                                        // Individuele stick controller. 
-  {
-    LinkseSnelheid=Snelheid;
-    RechtseSnelheid=Stuur;
-  }
+  // Mengt de snelheid en de stuur signalen.
+
+  Stuur=Stuur-1500;
+  LinkseSnelheid=Snelheid-Stuur;
+  RechtseSnelheid=Snelheid+Stuur;
+
 
   linksemodus=1;
   rechtsemodus=1;
@@ -295,7 +209,7 @@ void loop() {
   }
 }
 
-void Distance() {
+void Distance() { // meet de afstand van de sensor
   
  digitalWrite(trigPin, LOW); 
  delayMicroseconds(2); 
@@ -323,9 +237,9 @@ void Distance() {
   digitalWrite(timeOutPin, HIGH);
 }
  
- void Pinkers(int Stuur, unsigned long currentMillis){ 
+ void Pinkers(int Stuur, unsigned long currentMillis){ // laat de pinkers pinken
    
-   if (Stuur > 1550){
+   if (Stuur > 1550){ // als de wagen naar rechts gaat, rechter pinkers pinken
     if(currentMillis - previousMillis >= interval) {
           // save the last time you blinked the LED 
 
@@ -347,7 +261,7 @@ void Distance() {
        digitalWrite(Rpinker, RledState);
    }
          
-   if (Stuur < 1450) {
+   if (Stuur < 1450) { // als de wagen naar links gaat, linker pinkers pinken
      if(currentMillis - previousMillis >= interval) {
       // save the last time you blinked the LED 
         previousMillis = currentMillis;   
@@ -367,6 +281,3 @@ void Distance() {
         digitalWrite(Lpinker, LledState);             
       } 
 }
-
-
-    
