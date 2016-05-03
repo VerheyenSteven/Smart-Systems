@@ -1,6 +1,6 @@
 Servo myservo;  // create servo object to control a servo 
                 // twelve servo objects can be created on most boards
- 
+
 int pos = 90;                               // variable to store the servo position 
 int count = 0; 
 
@@ -14,7 +14,7 @@ int hoekServoRondkijken = 90;             //de maximale hoek van de servo
 
 int maximumRange = 200;                   // Maximum range needed
 int minimumRange = 0;                     // Minimum range needed
-long duration, distance;                  // Duration used to calculate distance
+
 
 unsigned long previousMillisServo = 0;    // slaagt de laatste tijd op waar servo geupdate was
 const long intervalServo = 1000;          // interval van de servo

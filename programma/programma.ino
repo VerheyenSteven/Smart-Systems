@@ -2,12 +2,12 @@
 #include "IOpins.h"
 #include "Constants.h"
  
-#include <SPI.h>
-#include <nRF24L01.h>
-#include <RF24.h>
+//#include <SPI.h>
+//#include <nRF24L01.h>
+//#include <RF24.h>
 
 /*-----( Declare objects )-----*/
-RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
+//RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
 void setup() {
  
@@ -17,24 +17,25 @@ void setup() {
   pinMode(LmotorB,OUTPUT);
   pinMode(RmotorB,OUTPUT);
 
-  radio.begin();                  // voor de RF module te openen
+ /* radio.begin();                  // voor de RF module te openen
   radio.openReadingPipe(1,pipe);
-  radio.startListening();
+  radio.startListening();*/
   
-  myservo.attach(3);              // attaches the servo on pin 9 to the servo object 
+  myservo.attach(A2);              // attaches the servo on pin 9 to the servo object 
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(timeOutPin, OUTPUT);
-  
-
+ 
 }
 
 void loop() {
    Snelheid = 1500;             // zet snelheid in de center positie
    Stuur = 1500;                // zet stuur in de center positie
    unsigned long currentMillis = millis(); // wordt gebruikt voor verschillende time-outs
+//myservo.write(10); 
   
-  if (radio.available() )       // kijkt of er een RF signaal is
+  
+  /*if (radio.available() )       // kijkt of er een RF signaal is
   {
     vooruitRijden = LOW;
     Serial.println("Het werkt");
@@ -55,94 +56,40 @@ void loop() {
       Stuur  = (input[2])+1000;     // geeft de geontvangde data door aan stuur.
       Serial.print("\n\n"); 
     }
-//ftgyhuji
 
-   else {
-      if(currentMillis - previousMillisServo >= intervalServo) {
-       
-       previousMillisServo = currentMillis;           //zet om de zoveel tijd de positie van de servomotor anders.  
-       myservo.write(pos);  
-       
-       if(vooruitKijken)
-       {         
-         pos += hoekServo;                            //schuift de servomotor op
-         if(pos >= 125 || pos <= 55) hoekServo = hoekServo*-1; 
-       }       
-     }
-     
-     if (currentMillis - previousMillisSensor >= intervalSensor) {
-         previousMillisSensor = currentMillis; 
-         Distance();                                   //als de servomotor in positie is kijk de distance 
-         
-         if (pos >= 55 && pos <= 125 && distance <= 10 && distance > 0) { //als hij voor hem iets detecteerd
-             count += 1;       
-             vooruitRijden = LOW;       
-             if (count >= 5) rechtsKijken = HIGH;
-             
-             Serial.println("STOP");
-             
-          }
-           
-         else if (pos >= 55 && pos <= 125 && distance > 10 || distance == -1) { //als er geen obstakels zijn vooruit rijden
-              count = 0;
-             vooruitRijden = HIGH;
-             //rondKijken = LOW;
-             Serial.println("DRIVE");
-         }
-       }
-     }
-    
-  
-  if(vooruitRijden){
-         Snelheid = 2000;
+    // ------------------------------------------automatisch rijden -------------------------------------------------------
+
+  else {*/
+
+    delay(500);
+
+    long waarde = Distance();
+    if (waarde<20 && waarde>0){
+
+      if(waarde<10 && waarde>0){
+        Snelheid = 1500;
          Stuur = 1500;
-  }
-  
-  if(rechtsKijken) {
-    vooruitKijken = LOW;
-    Serial.println("rechtskijken");
-    Serial.println(distance);
-    Serial.println(pos);
-    pos = 0;
-     if ( pos == 0 && distance >= 10 || distance == -1) //als hij links iets detecteerd zal hij naar rechts begeven.
-     {
-       Snelheid = 1500;
-       Stuur = 2000; 
-       rechtsDraaien = HIGH;
+      }else{
+         Snelheid = 1600;
+          Stuur = 1500;
+      }
        
-       Serial.println("rechtsdraaien"); 
-      //  vooruitKijken = HIGH;     
-     }   
-   else 
-     {
-       pos = 180;
-       Serial.println("Linkskijken");
-       
-       if (pos == 180 && distance >= 20 ||distance == -1)
-       {
-         Snelheid = 1500;
-         Stuur = 1000;
-         Serial.println("Linksdraaien");
-         vooruitKijken = HIGH;
-       }       
-       else vooruitKijken = HIGH;
-     }
-  }
-  
-  if (rechtsDraaien) 
-  {
-    pos = 90;
-    Serial.println("Rechtsdraaien");
-    if (pos == 90 && distance >= 30 || distance == -1)
-    {
-      rechtsKijken = LOW;
-      vooruitKijken = HIGH;
     }
-  }
+    else{
+      Snelheid = 1700;
+      Stuur = 1500;
+    }
+  //}
+
+
+
+    Serial.println(Stuur);
+    Serial.println(Snelheid);
   
-   
+  
     Pinkers(Stuur, currentMillis);
-    
+
+
     //------------------------------------------------------------ Code voor RC inputs. ---------------------------------------------------------
 
 
@@ -172,7 +119,16 @@ void loop() {
 
     // --------------------------------------------------------- Code voor het aandrijven van dd dubbele "H" bruggen. --------------------------------------
 
-           
+  Serial.print("linksPWM ");
+  Serial.print(linksemodus);
+  Serial.print(" PWM:  ");
+  Serial.println(linksePWM);
+   Serial.print("rechtsePWM ");
+   Serial.print(rechtsemodus);
+  Serial.print(" PWM:  ");
+   Serial.println( rechtsePWM);
+  
+         
   switch (linksemodus)                                    // Als de linkse motor niet recent overbelast is geweest.
   {
   case 2:                                                 // Linkse motor voorwaarts. 
@@ -212,7 +168,9 @@ void loop() {
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-void Distance() { // meet de afstand van de sensor
+long Distance() { // meet de afstand van de sensor
+ 
+ long duration, distance;                  // Duration used to calculate distance
   
  digitalWrite(trigPin, LOW); 
  delayMicroseconds(2); 
@@ -229,15 +187,16 @@ void Distance() { // meet de afstand van de sensor
  if (distance >= maximumRange || distance <= minimumRange){
  /* Send a negative number to computer and Turn LED ON 
  to indicate "out of range" */
-   Serial.println("-1");
+  // Serial.println("-1");
    digitalWrite(timeOutPin, LOW);
  }
  else {
  /* Send the distance to the computer using Serial protocol, and
  turn LED OFF to indicate successful reading. */
-   Serial.println(distance);
+   //Serial.println(distance);
  }
   digitalWrite(timeOutPin, HIGH);
+  return distance;
 }
 
 
