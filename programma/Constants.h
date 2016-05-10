@@ -1,4 +1,4 @@
-Servo myservo;  // create servo object to control a servo 
+//Servo myservo;  // create servo object to control a servo 
                 // twelve servo objects can be created on most boards
 
 int pos = 90;                               // variable to store the servo position 

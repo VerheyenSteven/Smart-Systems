@@ -1,4 +1,4 @@
-#include <Servo.h> 
+//#include <Servo.h> 
 #include "IOpins.h"
 #include "Constants.h"
  
@@ -72,12 +72,7 @@ void loop() {
     else {
       rij(1700, 1500);
     }
-  }
-
-
-//******************************************************ZIGZAG********************************************
-
-  if (beginLeft == true) {
+      if (beginLeft == true) {
       Links30();    
   }  
   else {
@@ -87,13 +82,25 @@ void loop() {
         Draaien90();
       }
       else {
-        rij (1600, 1500);
+        Snelheid=1600;
+        Stuur= 1500;
+        rij (Snelheid, Stuur);
       }
     } 
     else {
-        rij(1800, 1500);
+        Stuur = 1500;
+        Snelheid = 1800;
+        rij(Snelheid, Stuur);
     }
   }
+  }
+
+
+//******************************************************ZIGZAG********************************************
+
+
+
+  
 
     Serial.println(Stuur);
     Serial.println(Snelheid);
@@ -105,17 +112,18 @@ void loop() {
 void Draaien90() {
   if (rechtsDraaien == true) { rij(1500, 1023); rechtsDraaien = false; }
   else { rij(1500, 2023); rechtsDraaien = true; }
-  delay(2000);
+  delay(1000);
   Stop();
 }
 
 void Stop(){
   rij(1500, 1500);
+  
 }
 
 void Links30() {   
   rij(1500, 2023);
-  delay(1150);
+  delay(500);
   StopLinks();  
 }
 
@@ -125,7 +133,7 @@ void StopLinks() {
 }
 
     //------------------------------------------------------------ Code voor RC inputs. ---------------------------------------------------------
-void rij() {
+void rij(int Snelheid, int Stuur) {
 
   if (abs(Snelheid-1500)<RCdeadband) Snelheid=1500;           // Als de snelheid input in de speling is dan zet men het op 1500 (standaard waarde voor meeste servo's). 
   if (abs(Stuur-1500)<RCdeadband) Stuur=1500;                 // Als de sturing input in de speling is dan zet men het op 1500 (standaard waarde voor meeste servo's).
