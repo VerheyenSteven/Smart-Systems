@@ -2,12 +2,12 @@
 #include "IOpins.h"
 #include "Constants.h"
  
-//#include <SPI.h>
-//#include <nRF24L01.h>
-//#include <RF24.h>
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
 
 /*-----( Declare objects )-----*/
-//RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
+RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
 void setup() {
  
@@ -17,11 +17,11 @@ void setup() {
   pinMode(LmotorB,OUTPUT);
   pinMode(RmotorB,OUTPUT);
 
- /* radio.begin();                  // voor de RF module te openen
+  radio.begin();                  // voor de RF module te openen
   radio.openReadingPipe(1,pipe);
-  radio.startListening();*/
+  radio.startListening();
   
-  myservo.attach(A2);              // attaches the servo on pin 9 to the servo object 
+  //myservo.attach(A2);              // attaches the servo on pin 9 to the servo object 
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(timeOutPin, OUTPUT);
@@ -32,12 +32,11 @@ void loop() {
    Snelheid = 1500;             // zet snelheid in de center positie
    Stuur = 1500;                // zet stuur in de center positie
    unsigned long currentMillis = millis(); // wordt gebruikt voor verschillende time-outs
-//myservo.write(10); 
+   //myservo.write(10); 
   
   
-  /*if (radio.available() )       // kijkt of er een RF signaal is
+  if (radio.available() )       // kijkt of er een RF signaal is
   {
-    vooruitRijden = LOW;
     Serial.println("Het werkt");
       
     // Fetch the data payload
@@ -55,43 +54,78 @@ void loop() {
       Serial.println(input[2]);
       Stuur  = (input[2])+1000;     // geeft de geontvangde data door aan stuur.
       Serial.print("\n\n"); 
+      rij(Snelheid, Stuur);
     }
 
     // ------------------------------------------automatisch rijden -------------------------------------------------------
 
-  else {*/
-
+  else {
     delay(500);
-
     long waarde = Distance();
-    if (waarde<20 && waarde>0){
+    if (waarde < 20 && waarde > 0){
+      if (waarde < 10 && waarde > 0){
+         rij(1500, 1500);
+      } else{
+          rij(1600, 1500);
+      }  
+    }
+    else {
+      rij(1700, 1500);
+    }
+  }
 
-      if(waarde<10 && waarde>0){
-        Snelheid = 1500;
-         Stuur = 1500;
-      }else{
-         Snelheid = 1600;
-          Stuur = 1500;
+
+//******************************************************ZIGZAG********************************************
+
+  if (beginLeft == true) {
+      Links30();    
+  }  
+  else {
+    long waarde = Distance();
+    if (waarde < 20 && waarde > 0){
+      if(waarde < 10 && waarde > 0){
+        Draaien90();
       }
-       
+      else {
+        rij (1600, 1500);
+      }
+    } 
+    else {
+        rij(1800, 1500);
     }
-    else{
-      Snelheid = 1700;
-      Stuur = 1500;
-    }
-  //}
-
-
+  }
 
     Serial.println(Stuur);
     Serial.println(Snelheid);
   
   
     Pinkers(Stuur, currentMillis);
+}
 
+void Draaien90() {
+  if (rechtsDraaien == true) { rij(1500, 1023); rechtsDraaien = false; }
+  else { rij(1500, 2023); rechtsDraaien = true; }
+  delay(2000);
+  Stop();
+}
+
+void Stop(){
+  rij(1500, 1500);
+}
+
+void Links30() {   
+  rij(1500, 2023);
+  delay(1150);
+  StopLinks();  
+}
+
+void StopLinks() {
+  rij(1500,1500);
+  beginLeft = false;
+}
 
     //------------------------------------------------------------ Code voor RC inputs. ---------------------------------------------------------
-
+void rij() {
 
   if (abs(Snelheid-1500)<RCdeadband) Snelheid=1500;           // Als de snelheid input in de speling is dan zet men het op 1500 (standaard waarde voor meeste servo's). 
   if (abs(Stuur-1500)<RCdeadband) Stuur=1500;                 // Als de sturing input in de speling is dan zet men het op 1500 (standaard waarde voor meeste servo's).
@@ -165,9 +199,9 @@ void loop() {
     break;
   }
 }
-//-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+//----------------------------------------------------------------DISTANCE-------------------------------------------------------------------------------------------------
 long Distance() { // meet de afstand van de sensor
  
  long duration, distance;                  // Duration used to calculate distance
