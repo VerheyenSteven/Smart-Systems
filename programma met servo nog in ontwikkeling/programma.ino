@@ -1,14 +1,17 @@
-//#include <Servo.h> 
+//#include <ServoTimer2.h>  // the servo library
 #include "IOpins.h"
 #include "Constants.h"
+
+
  
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
 
 /*-----( Declare objects )-----*/
-//RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
+RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
+//ServoTimer2 myservo; 
 void setup() {
  
   Serial.begin(9600);
@@ -21,7 +24,7 @@ void setup() {
   radio.openReadingPipe(1,pipe);
   radio.startListening();
   
-  myservo.attach(A2);              // attaches the servo on pin 9 to the servo object 
+  //myservo.attach(servopin);              // attaches the servo on pin 9 to the servo object 
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(timeOutPin, OUTPUT);
@@ -37,7 +40,7 @@ void loop() {
   
   if (radio.available() )       // kijkt of er een RF signaal is
   {
-    vooruitRijden = LOW;
+    vooruitRijden = false;
     Serial.println("Het werkt");
       
     // Fetch the data payload
@@ -88,6 +91,10 @@ void loop() {
   
   
     Pinkers(Stuur, currentMillis);
+    
+    
+    //*********************************************************************** servo *************************************************************
+//    myservo.write(100);
 
 
     //------------------------------------------------------------ Code voor RC inputs. ---------------------------------------------------------
@@ -211,17 +218,17 @@ long Distance() { // meet de afstand van de sensor
 
 
        // if the LED is off turn it on and vice-versa:
-       if (RledState == LOW)
-           RledState = HIGH;
+       if (RledState == 0)
+           RledState = 1;
        else
-           RledState = LOW;
+           RledState = 0;
           
          // set the LED with the ledState of the variable:
            digitalWrite(Rpinker, RledState);
    }
   }
    else {
-       RledState = LOW;
+       RledState = 0;
        digitalWrite(Rpinker, RledState);
    }
          
@@ -231,17 +238,17 @@ long Distance() { // meet de afstand van de sensor
         previousMillis = currentMillis;   
 
           // if the LED is off turn it on and vice-versa:
-          if (LledState == LOW)
-            LledState = HIGH;
+          if (LledState == 0)
+            LledState = 1;
           else
-            LledState = LOW;
+            LledState = 0;
       
           // set the LED with the ledState of the variable:
           digitalWrite(Lpinker, LledState);
         }
       }
       else {
-        LledState = LOW;              
+        LledState = 0;              
         digitalWrite(Lpinker, LledState);             
       } 
 }
