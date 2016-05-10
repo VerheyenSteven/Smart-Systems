@@ -31,7 +31,7 @@ void setup() {
 void loop() {
    Snelheid = 1500;             // zet snelheid in de center positie
    Stuur = 1500;                // zet stuur in de center positie
-   unsigned long currentMillis = millis(); // wordt gebruikt voor verschillende time-outs
+   currentMillis = millis(); // wordt gebruikt voor verschillende time-outs
    //myservo.write(10); 
   
   
@@ -54,25 +54,31 @@ void loop() {
       Serial.println(input[2]);
       Stuur  = (input[2])+1000;     // geeft de geontvangde data door aan stuur.
       Serial.print("\n\n"); 
-      rij(Snelheid, Stuur);
+      rij();
     }
 
     // ------------------------------------------automatisch rijden -------------------------------------------------------
 
   else {
-    delay(500);
+    /*delay(500);
     long waarde = Distance();
     if (waarde < 20 && waarde > 0){
       if (waarde < 10 && waarde > 0){
-         rij(1500, 1500);
+        Snelheid = 1500;
+        Stuur = 1500;
+        rij();
       } else{
-          rij(1600, 1500);
+        Snelheid = 1600;
+        Stuur = 1500;
+        rij();
       }  
     }
     else {
-      rij(1700, 1500);
+      Snelheid = 1500;
+      Stuur = 1500;
+      rij();
     }
-  }
+  }*/
 
 
 //******************************************************ZIGZAG********************************************
@@ -87,45 +93,56 @@ void loop() {
         Draaien90();
       }
       else {
-        rij (1600, 1500);
+        Snelheid = 1600;
+        Stuur = 1500;
+        rij();
       }
     } 
-    else {
-        rij(1800, 1500);
+    else {      
+      Snelheid = 1700;
+      Stuur = 1500;
+      rij();
     }
   }
+}
 
     Serial.println(Stuur);
-    Serial.println(Snelheid);
-  
-  
-    Pinkers(Stuur, currentMillis);
+    Serial.println(Snelheid);   
 }
 
 void Draaien90() {
-  if (rechtsDraaien == true) { rij(1500, 1023); rechtsDraaien = false; }
-  else { rij(1500, 2023); rechtsDraaien = true; }
-  delay(2000);
+  Snelheid = 1500;
+  if (rechtsDraaien == true) {Stuur = 2023; rechtsDraaien = false; }
+  else { Stuur = 1023; rechtsDraaien = true; }
+  rij();
+  delay(1000);
   Stop();
 }
 
 void Stop(){
-  rij(1500, 1500);
+  Snelheid = 1500;
+  Stuur = 1500;
+  rij();
 }
 
-void Links30() {   
-  rij(1500, 2023);
-  delay(1150);
+void Links30() { 
+  Snelheid = 1500;
+  Stuur = 2023;  
+  rij();
+  delay(500);
   StopLinks();  
 }
 
 void StopLinks() {
-  rij(1500,1500);
+  Snelheid = 1500;
+  Stuur = 1500;
+  rij();
   beginLeft = false;
 }
 
     //------------------------------------------------------------ Code voor RC inputs. ---------------------------------------------------------
 void rij() {
+  Pinkers(Stuur, currentMillis);
 
   if (abs(Snelheid-1500)<RCdeadband) Snelheid=1500;           // Als de snelheid input in de speling is dan zet men het op 1500 (standaard waarde voor meeste servo's). 
   if (abs(Stuur-1500)<RCdeadband) Stuur=1500;                 // Als de sturing input in de speling is dan zet men het op 1500 (standaard waarde voor meeste servo's).
