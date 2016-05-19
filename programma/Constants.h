@@ -23,9 +23,13 @@ const long intervalSensor = 300;          //interval sensor
 
 bool vooruitRijden = LOW;                 // de bools die worden aangepast van de RF, hierdoor zal de auto rijden of andere manuevers maken
 bool achteruitRijden= LOW;
-bool linksRijden = LOW;
-bool rechtsRijden = LOW;
-bool rechtsKijken = LOW;
+
+bool linksKijken = LOW;
+bool linksKijken20 = LOW;
+bool rechtsKijken = HIGH
+bool rechtsKijken20 = LOW;
+
+
 bool vooruitKijken = HIGH;
 bool rechtsDraaien = LOW; //hier gaat het fout
 

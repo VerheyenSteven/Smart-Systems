@@ -6,6 +6,7 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 
+
 /*-----( Declare objects )-----*/
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
@@ -33,56 +34,64 @@ void loop() {
    Stuur = 1500;                // zet stuur in de center positie
    currentMillis = millis(); // wordt gebruikt voor verschillende time-outs
    //myservo.write(10); 
+   
   
   
   if (radio.available() )       // kijkt of er een RF signaal is
   {
-    Serial.println("Het werkt");
+    //Serial.println("Het werkt");
       
     // Fetch the data payload
       
       done = radio.read(input, sizeof(input));
       
-      Serial.print("Switch:  ");
-      Serial.print(input[0]);
+      //Serial.print("Switch:  ");
+      //Serial.print(input[0]);
       
       Snelheid= (input[1])+1000;     // geeft de geontvangde data door aan snelheid.
       
-      Serial.print(input[1]);
-      Serial.print("\n");
-      Serial.print("Y-axis: ");
-      Serial.println(input[2]);
+      //Serial.print(input[1]);
+      //Serial.print("\n");
+      //Serial.print("Y-axis: ");
+      //Serial.println(input[2]);
       Stuur  = (input[2])+1000;     // geeft de geontvangde data door aan stuur.
-      Serial.print("\n\n"); 
-      rij();
+      //Serial.print("\n\n"); 
+      Rij();
     }
 
     // ------------------------------------------automatisch rijden -------------------------------------------------------
 
   else {
-    /*delay(500);
+    //delay(500);
     long waarde = Distance();
     if (waarde < 20 && waarde > 0){
       if (waarde < 10 && waarde > 0){
         Snelheid = 1500;
         Stuur = 1500;
-        rij();
-      } else{
+        Rij();
+        RechtsKijken(waarde);
+        if (linksKijken == true) { LinksKijken(waarde); }
+        if (achteruitRijden == true) { AchteruitRijden();}
+        
+        
+      } else {
+        Rechtskijken20(waarde);
+        if (linksKijken20 == true) { LinksKijken30(waarde); }
         Snelheid = 1600;
         Stuur = 1500;
-        rij();
+        Rij();
       }  
     }
     else {
-      Snelheid = 1500;
+      Snelheid = 1800;
       Stuur = 1500;
-      rij();
+      Rij();
     }
-  }*/
+  }
 
 
 //******************************************************ZIGZAG********************************************
-
+/*
   if (beginLeft == true) {
       Links30();    
   }  
@@ -95,40 +104,101 @@ void loop() {
       else {
         Snelheid = 1600;
         Stuur = 1500;
-        rij();
+        Rij();
       }
     } 
     else {      
       Snelheid = 1700;
       Stuur = 1500;
-      rij();
+      Rij();
     }
   }
 }
 
-    Serial.println(Stuur);
-    Serial.println(Snelheid);   
+    //Serial.println(Stuur);
+    //Serial.println(Snelheid);   */
 }
 
-void Draaien90() {
+//-------------------------------------Methodes automatisch rijden----------------------------------------
+
+void RechtsKijken20(long waarde){
+  Serial.println(1)
+  delay(500);
+  if (waarde > 20){ linksKijken20 = true;  }
+}  
+
+void LinksKijken20(long waarde) {
+  linksKijken20 = false;
+  Serial.println(2);
+  delay(500);
+  if (waarde > 20) { Serial.println(0);}
+}
+
+void RechtsKijken (long waarde) {
+  linksKijken = true;
+  Serial.println(3);
+  delay(500);
+
+  if (waarde > 20){  
+    Snelheid = 1500;
+    Stuur = 1023;
+    Rij();
+    delay(1000);
+    Stop();  
+  } else {
+    Serial.println(4);
+    linksKijken = true;
+  }  
+  
+}
+
+void LinksKijken(long waarde) {
+  linksKijken = false;
+  Serial.println(4);
+  delay(500);
+
+  if (waarde > 20){  
+    Snelheid = 1500;
+    Stuur = 2023;
+    Rij();
+    delay(1000);
+    Stop();  
+  } else {
+    Serial.println(0);
+    achteruitRijden = true;
+  }  
+}
+
+void AchteruitRijden(){
+  achteruitRijden = false;
   Snelheid = 1500;
-  if (rechtsDraaien == true) {Stuur = 2023; rechtsDraaien = false; }
-  else { Stuur = 1023; rechtsDraaien = true; }
-  rij();
-  delay(1000);
+  Stuur = 2023;
+  Rij();
+  delay(2000);
   Stop();
 }
 
 void Stop(){
   Snelheid = 1500;
   Stuur = 1500;
-  rij();
+  Rij();
+}
+
+//----------------------------------------------Methodes voor zigzag---------------------------------------
+
+void Draaien90() {
+  Snelheid = 1500;
+  if (rechtsDraaien == true) {Stuur = 2023; rechtsDraaien = false; }
+  else { Stuur = 1023; rechtsDraaien = true; }
+  Rij();
+  delay(1000);
+  Stop();
 }
 
 void Links30() { 
   Snelheid = 1500;
   Stuur = 2023;  
-  rij();
+  Rij();
   delay(500);
   StopLinks();  
 }
@@ -136,12 +206,12 @@ void Links30() {
 void StopLinks() {
   Snelheid = 1500;
   Stuur = 1500;
-  rij();
+  Rij();
   beginLeft = false;
 }
 
     //------------------------------------------------------------ Code voor RC inputs. ---------------------------------------------------------
-void rij() {
+void Rij() {
   Pinkers(Stuur, currentMillis);
 
   if (abs(Snelheid-1500)<RCdeadband) Snelheid=1500;           // Als de snelheid input in de speling is dan zet men het op 1500 (standaard waarde voor meeste servo's). 
@@ -170,14 +240,14 @@ void rij() {
 
     // --------------------------------------------------------- Code voor het aandrijven van dd dubbele "H" bruggen. --------------------------------------
 
-  Serial.print("linksPWM ");
+  /*Serial.print("linksPWM ");
   Serial.print(linksemodus);
   Serial.print(" PWM:  ");
   Serial.println(linksePWM);
    Serial.print("rechtsePWM ");
    Serial.print(rechtsemodus);
   Serial.print(" PWM:  ");
-   Serial.println( rechtsePWM);
+   Serial.println( rechtsePWM);*/
   
          
   switch (linksemodus)                                    // Als de linkse motor niet recent overbelast is geweest.
