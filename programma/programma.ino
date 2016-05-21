@@ -8,7 +8,7 @@
 
 
 /*-----( Declare objects )-----*/
-RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
+//RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
 void setup() {
  
@@ -21,22 +21,14 @@ void setup() {
   radio.begin();                  // voor de RF module te openen
   radio.openReadingPipe(1,pipe);
   radio.startListening();
-  
-  //myservo.attach(A2);              // attaches the servo on pin 9 to the servo object 
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
-  pinMode(timeOutPin, OUTPUT);
- 
 }
 
 void loop() {
    Snelheid = 1500;             // zet snelheid in de center positie
    Stuur = 1500;                // zet stuur in de center positie
    currentMillis = millis(); // wordt gebruikt voor verschillende time-outs
-   //myservo.write(10); 
    
-  
-  
+
  /* if (radio.available() )       // kijkt of er een RF signaal is
   {
     Serial.println("Het werkt");
@@ -62,14 +54,15 @@ void loop() {
     // ------------------------------------------automatisch rijden -------------------------------------------------------
 
   else {*/
-    //delay(500);
-    long waarde = Distance();
 
-    //Serial.println(waarde);
-    //Serial.print(waarde);
-    if (waarde < 20 && waarde > 0){
+  if (Serial.available() > 1) {
+      reader = Serial.parseInt();
+      delay(2);
+  }
 
-      if (waarde < 10 && waarde > 0){
+    if (reader < 20 && reader > 0){
+
+      if (reader < 10 && reader > 0){
         Stop();
         rechtseafstand = RechtsKijken();
         
@@ -88,12 +81,13 @@ void loop() {
         linkseafstand = -1;
 
       } else {
-
-        if ( rechtseafstand >= 0 && linkseafstand >= 0){         
             Stop();
             rechtseafstand = RechtsKijken20();
             linkseafstand = LinksKijken20();
-    
+
+        if ( rechtseafstand >= 0 && linkseafstand >= 0){         
+            
+           
             if( rechtseafstand <20 || linkseafstand < 20){
               if(rechtseafstand< linkseafstand){
                   Serial.println(1);
@@ -123,9 +117,9 @@ void loop() {
       Links30();    
   }  
   else {
-    long waarde = Distance();
-    if (waarde < 20 && waarde > 0){
-      if(waarde < 10 && waarde > 0){
+    long reader = Distance();
+    if (reader < 20 && reader > 0){
+      if(reader < 10 && reader > 0){
         Draaien90();
       }
       else {
@@ -148,28 +142,27 @@ void loop() {
 
 //-------------------------------------Methodes automatisch rijden----------------------------------------
 
-long RechtsKijken20(){
- 
-  Serial.println(1);
-  delay(500);
-  return  Distance();
+int RechtsKijken20(){
+  reader = 0; 
+  Serial.println(1);    
+  return getDistance();
+  
+  
 }  
 
-long LinksKijken20() {
+int LinksKijken20() {
+  reader = 0;
   Serial.println(2);
-  delay(500);
-  return Distance();
+  return getDistance();
 }
 
-long RechtsKijken() {
-
+int RechtsKijken() {
+  reader = 0;
   Serial.println(3);
-  delay(500);
-  return Distance();  
-  
+  return getDistance();  
 }
 
- void RechtsDraaien(){ 
+int RechtsDraaien(){ 
     Snelheid = 1500;
     Stuur = 1023;
     Rij();
@@ -179,11 +172,10 @@ long RechtsKijken() {
 
 
 
-long LinksKijken() {
-  
+int LinksKijken() {
+  reader = 0;
   Serial.println(4);
-  delay(500);
-  return Distance(); 
+  return getDistance(); 
 }
 
 void LinksDraaien(){
@@ -239,8 +231,8 @@ void StopLinks() {
 void Rij() {
   Pinkers(Stuur, currentMillis);
 
-  if (abs(Snelheid-1500)<RCdeadband) Snelheid=1500;           // Als de snelheid input in de speling is dan zet men het op 1500 (standaard waarde voor meeste servo's). 
-  if (abs(Stuur-1500)<RCdeadband) Stuur=1500;                 // Als de sturing input in de speling is dan zet men het op 1500 (standaard waarde voor meeste servo's).
+  if (abs(Snelheid-1500)<RCdeadband) Snelheid=1500;           // Als de snelheid input in de speling is dan zet men het op 1500 (standaard reader voor meeste servo's). 
+  if (abs(Stuur-1500)<RCdeadband) Stuur=1500;                 // Als de sturing input in de speling is dan zet men het op 1500 (standaard reader voor meeste servo's).
 
   // Mengt de snelheid en de stuur signalen.
 
@@ -264,89 +256,56 @@ void Rij() {
    
 
     // --------------------------------------------------------- Code voor het aandrijven van dd dubbele "H" bruggen. --------------------------------------
-
-  /*Serial.print("linksPWM ");
-  Serial.print(linksemodus);
-  Serial.print(" PWM:  ");
-  Serial.println(linksePWM);
-   Serial.print("rechtsePWM ");
-   Serial.print(rechtsemodus);
-  Serial.print(" PWM:  ");
-   Serial.println( rechtsePWM);*/
+   
+    switch (linksemodus)                                    // Als de linkse motor niet recent overbelast is geweest.
+    {
+    case 2:                                                 // Linkse motor voorwaarts. 
+      analogWrite(LmotorA,0);
+      analogWrite(LmotorB,linksePWM);
+      break;
   
-         
-  switch (linksemodus)                                    // Als de linkse motor niet recent overbelast is geweest.
-  {
-  case 2:                                                 // Linkse motor voorwaarts. 
-    analogWrite(LmotorA,0);
-    analogWrite(LmotorB,linksePWM);
-    break;
-
-  case 1:                                                 // Linkse motor stopt.
-    analogWrite(LmotorA,linksePWM);
-    analogWrite(LmotorB,linksePWM);
-    break;
-
-  case 0:                                                 // Linkse motor achterwaarts.
-    analogWrite(LmotorA,linksePWM);
-    analogWrite(LmotorB,0);
-    break;
-  }
-
-  switch (rechtsemodus)                                   // Als de rechtse motor niet recent overbelast is geweest.
-  {
-  case 2:                                                 // Rechtse motor voorwaarts.
-    analogWrite(RmotorA,0);
-    analogWrite(RmotorB,rechtsePWM);
-    break;
-
-  case 1:                                                 // Rechtse motor stopt. 
-    analogWrite(RmotorA,rechtsePWM);
-    analogWrite(RmotorB,rechtsePWM);
-    break;
-
-  case 0:                                                 // Rechtse motor achterwaarts.
-    analogWrite(RmotorA,rechtsePWM);
-    analogWrite(RmotorB,0);
-    break;
-  }
+    case 1:                                                 // Linkse motor stopt.
+      analogWrite(LmotorA,linksePWM);
+      analogWrite(LmotorB,linksePWM);
+      break;
+  
+    case 0:                                                 // Linkse motor achterwaarts.
+      analogWrite(LmotorA,linksePWM);
+      analogWrite(LmotorB,0);
+      break;
+    }
+  
+    switch (rechtsemodus)                                   // Als de rechtse motor niet recent overbelast is geweest.
+    {
+      case 2:                                                 // Rechtse motor voorwaarts.
+      analogWrite(RmotorA,0);
+      analogWrite(RmotorB,rechtsePWM);
+      break;
+  
+    case 1:                                                 // Rechtse motor stopt. 
+      analogWrite(RmotorA,rechtsePWM);
+      analogWrite(RmotorB,rechtsePWM);
+      break;
+  
+    case 0:                                                 // Rechtse motor achterwaarts.
+      analogWrite(RmotorA,rechtsePWM);
+      analogWrite(RmotorB,0);
+      break;
+    }
 }
 
 
 //----------------------------------------------------------------DISTANCE-------------------------------------------------------------------------------------------------
-long Distance() { // meet de afstand van de sensor
-  
- 
-  long duration, distance;                  // Duration used to calculate distance
-  digitalWrite(timeOutPin, HIGH);
-  digitalWrite(trigPin, LOW); 
-  delayMicroseconds(2); 
-
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10); 
- 
-  digitalWrite(trigPin, LOW);
-  duration = pulseIn(echoPin, HIGH);
- 
-  //Calculate the distance (in cm) based on the speed of sound.
-  distance = duration/58.2;
- 
-  if (distance >= maximumRange || distance <= minimumRange){
-    /* Send a negative number to computer and Turn LED ON 
-    to indicate "out of range" */
-    distance = 201;
-    digitalWrite(timeOutPin, LOW);
+int getDistance() {
+  while (reader == 0)
+  {
+    if(Serial.available()>1){
+      reader = Serial.parseInt();
+      delay(2);
+    }
   }
-  else { 
-    /* Send the distance to the computer using Serial protocol, and
-    turn LED OFF to indicate successful reading. */
-    //Serial.println(distance);
-  }
-  Serial.print("distancve ");
-  Serial.println(distance);
-  return distance;
+  return  reader;
 }
-
 
  //--------------------------------------------code voor de pinkers ----------------------------------------------------
  void Pinkers(int Stuur, unsigned long currentMillis){ // laat de pinkers pinken

@@ -1,6 +1,6 @@
 
 
-
+int reader = 0;
 
 int pos = 90;                               // variable to store the servo position 
 int count = 0; 
@@ -13,9 +13,6 @@ int LledState = LOW;                      //de status van de linker led
 int hoekServo = 35;                       // de hoek die de servo steeds opschuift
 int hoekServoRondkijken = 90;             //de maximale hoek van de servo
 
-int maximumRange = 200;                   // Maximum range needed
-int minimumRange = 0;                     // Minimum range needed
-
 long rechtseafstand  = -1;
 long linkseafstand = -1;
 
@@ -25,8 +22,6 @@ unsigned long previousMillisSensor =0;    // slaagt de laatste tijd op waar sens
 const long intervalSensor = 300;          //interval sensor
 
 bool vooruitRijden = LOW;                 // de bools die worden aangepast van de RF, hierdoor zal de auto rijden of andere manuevers maken
-
-
 
 bool vooruitKijken = HIGH;
 bool rechtsDraaien = LOW; //hier gaat het fout
