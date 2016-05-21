@@ -1,4 +1,4 @@
-#include <Servo.h> 
+
 #include "IOpins.h"
 #include "Constants.h"
  
@@ -37,7 +37,7 @@ void loop() {
    
   
   
-  if (radio.available() )       // kijkt of er een RF signaal is
+ /* if (radio.available() )       // kijkt of er een RF signaal is
   {
     Serial.println("Het werkt");
       
@@ -61,23 +61,48 @@ void loop() {
 
     // ------------------------------------------automatisch rijden -------------------------------------------------------
 
-  else {
+  else {*/
     //delay(500);
     long waarde = Distance();
+
+    //Serial.println(waarde);
     //Serial.print(waarde);
     if (waarde < 20 && waarde > 0){
+
       if (waarde < 10 && waarde > 0){
-        Snelheid = 1500;
-        Stuur = 1500;
-        Rij();
-        if (rechtsKijken == true) { RechtsKijken(); }
-        if (linksKijken == true) { LinksKijken(); }
-        if (achteruitRijden == true) { AchteruitRijden(); }
+        Stop();
+        rechtseafstand = RechtsKijken();
         
-        
+        if (rechtseafstand> 20){
+          RechtsDraaien();
+        }else{
+         linkseafstand = LinksKijken();
+         if (linkseafstand>20){
+          LinksDraaien();
+          }else{
+            AchteruitRijden;
+          }
+        }
+        Serial.println(0);
+        rechtseafstand = -1;
+        linkseafstand = -1;
+
       } else {
-        if (rechtsKijken20 == true) { RechtsKijken20(); }
-        if (linksKijken20 == true) { LinksKijken20(); }
+
+        if ( rechtseafstand >= 0 && linkseafstand >= 0){         
+            Stop();
+            rechtseafstand = RechtsKijken20();
+            linkseafstand = LinksKijken20();
+    
+            if( rechtseafstand <20 || linkseafstand < 20){
+              if(rechtseafstand< linkseafstand){
+                  Serial.println(1);
+              }     
+            }else{
+              Serial.println(0);
+            }
+        }
+
         Snelheid = 1600;
         Stuur = 1500;
         Rij();
@@ -89,7 +114,7 @@ void loop() {
       Stuur = 1500;
       Rij();
     }
-  }
+ // }
 
 
 //******************************************************ZIGZAG********************************************
@@ -123,65 +148,54 @@ void loop() {
 
 //-------------------------------------Methodes automatisch rijden----------------------------------------
 
-void RechtsKijken20(){
-  rechtsKijken20 = false;
-  long waarde = Distance();
-  Serial.println(waarde);
+long RechtsKijken20(){
+ 
   Serial.println(1);
-  delay(2000);  
-  if (waarde > 20){ linksKijken20 = true;  }
+  delay(500);
+  return  Distance();
 }  
 
-void LinksKijken20() {
-  long waarde = Distance();
-  Serial.println(waarde);
-  linksKijken20 = false;
+long LinksKijken20() {
   Serial.println(2);
-  delay(2000);
-  if (waarde > 20) { Serial.println(0); delay(2000);}
+  delay(500);
+  return Distance();
 }
 
-void RechtsKijken () {
-  rechtsKijken = false;
-  rechtsKijken20 = true;
-  long waarde = Distance();
-  Serial.println(waarde);
-  Serial.println(3);
-  delay(2000);
+long RechtsKijken() {
 
-  if (waarde > 20){  
+  Serial.println(3);
+  delay(500);
+  return Distance();  
+  
+}
+
+ void RechtsDraaien(){ 
     Snelheid = 1500;
     Stuur = 1023;
     Rij();
     delay(1000);
     Stop();  
-  } else {
-    linksKijken = true;
-  }  
+ }
+
+
+
+long LinksKijken() {
   
+  Serial.println(4);
+  delay(500);
+  return Distance(); 
 }
 
-void LinksKijken() {
-  long waarde = Distance();
-  Serial.println(waarde);
-  linksKijken = false;
-  Serial.println(4);
-  delay(2000);
-
-  if (waarde > 20){  
+void LinksDraaien(){
+ 
     Snelheid = 1500;
     Stuur = 2023;
     Rij();
     delay(1000);
     Stop();  
-  } else {
-    Serial.println(0);
-    achteruitRijden = true;
-  }  
 }
 
 void AchteruitRijden(){
-  achteruitRijden = false;
   Snelheid = 1500;
   Stuur = 2023;
   Rij();
@@ -320,7 +334,7 @@ long Distance() { // meet de afstand van de sensor
   if (distance >= maximumRange || distance <= minimumRange){
     /* Send a negative number to computer and Turn LED ON 
     to indicate "out of range" */
-    // Serial.println("-1");
+    distance = 201;
     digitalWrite(timeOutPin, LOW);
   }
   else { 
@@ -328,6 +342,8 @@ long Distance() { // meet de afstand van de sensor
     turn LED OFF to indicate successful reading. */
     //Serial.println(distance);
   }
+  Serial.print("distancve ");
+  Serial.println(distance);
   return distance;
 }
 
