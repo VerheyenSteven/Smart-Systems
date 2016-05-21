@@ -7,8 +7,8 @@ unsigned long previousMillis = 0;        // will store last time LED was updated
 // constants won't change :
 const long interval = 500;           // interval at which to blink (milliseconds)
 
-#define echoPin A0          // Echo Pin
-#define trigPin A1          // Trigger Pin
+#define echoPin 5          // Echo Pin
+#define trigPin 4          // Trigger Pin
 #define timeOutPin A5       //De pin om de sensor aan en uit te doen
 
 int maximumRange = 200;                   // Maximum range needed

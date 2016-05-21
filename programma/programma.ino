@@ -8,7 +8,7 @@
 
 
 /*-----( Declare objects )-----*/
-//RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
+RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
 void setup() {
  
