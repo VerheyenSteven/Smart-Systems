@@ -36,12 +36,16 @@ void loop(){
   }
   
   if (reader == 0) { myservo.write(80);  delay(250); reader = -1; }
-  if (reader == 1) { myservo.write(60); delay(250); reader = -1;}
-  if (reader == 2) { myservo.write(100); delay(250); reader = -1; }
-  if (reader == 3) { myservo.write(0); delay(250); reader = -1; }
-  if (reader == 4) { myservo.write(180); delay(250); reader = -1; }
+  else if (reader == 1) { myservo.write(60); delay(250); reader = -1;}
+  else if (reader == 2) { myservo.write(100); delay(250); reader = -1; }
+  else if (reader == 3) { myservo.write(0); delay(550); reader = -1; }
+  else if (reader == 4) { myservo.write(180); delay(550); reader = -1; }
+  else{
+    Distance();
+    delay(100);
+    }
   
-  Distance();
+  
 }
 
 void Distance() { // meet de afstand van de sensor

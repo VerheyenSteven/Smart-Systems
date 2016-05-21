@@ -9,7 +9,7 @@
 
 /*-----( Declare objects )-----*/
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
-
+bool schuinKijken = false;
 void setup() {
  
   Serial.begin(9600);
@@ -29,9 +29,9 @@ void loop() {
    currentMillis = millis(); // wordt gebruikt voor verschillende time-outs
    
 
- /* if (radio.available() )       // kijkt of er een RF signaal is
+  if (radio.available() )       // kijkt of er een RF signaal is
   {
-    Serial.println("Het werkt");
+    //Serial.println("Het werkt");
       
     // Fetch the data payload
       
@@ -53,16 +53,17 @@ void loop() {
 
     // ------------------------------------------automatisch rijden -------------------------------------------------------
 
-  else {*/
+  else {
 
   if (Serial.available() > 1) {
       reader = Serial.parseInt();
       delay(2);
   }
 
-    if (reader < 20 && reader > 0){
+    if (reader < 25 && reader > 0){
 
       if (reader < 10 && reader > 0){
+        schuinKijken = false;
         Stoop();
         rechtseAfstand = RechtsKijken();
         
@@ -79,26 +80,22 @@ void loop() {
           }
         }
         Serial.println(0);
-        rechtseAfstand = -1;
-        linkseAfstand = -1;
 
       } 
       else {
             Stoop();
 
-          if (rechtseAfstand <= 0 && linkseAfstand <= 0){  
-            rechtseAfstand = RechtsKijken20();
+          if (schuinKijken == false){ 
+            schuinKijken = true; 
+            rechtseAfstand = RechtsKijken20();            
             linkseAfstand = LinksKijken20();
           }
          
-            if( rechtseAfstand < 20 || linkseAfstand < 20){
-              if(rechtseAfstand < linkseAfstand){
-                  Serial.println(1);
-              }     
+            if( rechtseAfstand < 25 || linkseAfstand < 25){
+              if(rechtseAfstand < linkseAfstand) Serial.println(1);
+              else Serial.println(2);
             }
-            else {
-              Serial.println(0);
-            }
+            else Serial.println(0);
         
 
         Snelheid = 1600;
@@ -108,11 +105,12 @@ void loop() {
     }
     else {
       //Serial.println(6);
+      schuinKijken = false;
       Snelheid = 1800;
       Stuur = 1500;
       Rij();
     }
- // }
+ }
 
 
 //******************************************************ZIGZAG********************************************
@@ -148,44 +146,44 @@ void loop() {
 
 int RechtsKijken20(){
   reader = 0; 
-  Serial.println(1);    
+  Serial.println(1); 
+  delay(500);   
   return getDistance();
-  
-  
 }  
 
 int LinksKijken20() {
   reader = 0;
   Serial.println(2);
+  delay(500);
   return getDistance();
 }
 
 int RechtsKijken() {
   reader = 0;
   Serial.println(3);
+  delay(500);
   return getDistance();  
 }
 
 int RechtsDraaien(){ 
     Snelheid = 1500;
-    Stuur = 1023;
+    Stuur = 2023;
     Rij();
     delay(1000);
     Stoop();  
- }
-
-
+}
 
 int LinksKijken() {
   reader = 0;
   Serial.println(4);
+  delay(500);
   return getDistance(); 
 }
 
 void LinksDraaien(){
- 
+
     Snelheid = 1500;
-    Stuur = 2023;
+    Stuur = 1023;
     Rij();
     delay(1000);
     Stoop();  
@@ -310,7 +308,8 @@ int getDistance() {
       reader = Serial.parseInt();
       delay(2);
     }
-  }  
+  } 
+   
   return  reader;
 }
 
