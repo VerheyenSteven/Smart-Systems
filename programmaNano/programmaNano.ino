@@ -28,10 +28,10 @@ void loop(){
   }
   
   if (reader == '0') { myservo.write(80); }
-  if (reader == '1') { myservo.write(100); }
-  if (reader == '2') { myservo.write(60); }
-  if (reader == '3') { myservo.write(180); }
-  if (reader == '4') { myservo.write(0); }
+  if (reader == '1') { myservo.write(60); }
+  if (reader == '2') { myservo.write(100); }
+  if (reader == '3') { myservo.write(0); }
+  if (reader == '4') { myservo.write(180); }
   if (reader == '5') { digitalWrite(6, LOW); }
   if (reader == '6') { digitalWrite(7, LOW); }
   if (reader == '7') { digitalWrite(8, LOW); }

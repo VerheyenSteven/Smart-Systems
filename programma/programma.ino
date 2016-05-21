@@ -39,7 +39,7 @@ void loop() {
   
   if (radio.available() )       // kijkt of er een RF signaal is
   {
-    //Serial.println("Het werkt");
+    Serial.println("Het werkt");
       
     // Fetch the data payload
       
@@ -64,25 +64,27 @@ void loop() {
   else {
     //delay(500);
     long waarde = Distance();
+    //Serial.print(waarde);
     if (waarde < 20 && waarde > 0){
       if (waarde < 10 && waarde > 0){
         Snelheid = 1500;
         Stuur = 1500;
         Rij();
-        RechtsKijken(waarde);
-        if (linksKijken == true) { LinksKijken(waarde); }
-        if (achteruitRijden == true) { AchteruitRijden();}
+        if (rechtsKijken == true) { RechtsKijken(); }
+        if (linksKijken == true) { LinksKijken(); }
+        if (achteruitRijden == true) { AchteruitRijden(); }
         
         
       } else {
-        Rechtskijken20(waarde);
-        if (linksKijken20 == true) { LinksKijken30(waarde); }
+        if (rechtsKijken20 == true) { RechtsKijken20(); }
+        if (linksKijken20 == true) { LinksKijken20(); }
         Snelheid = 1600;
         Stuur = 1500;
         Rij();
       }  
     }
     else {
+      //Serial.println(6);
       Snelheid = 1800;
       Stuur = 1500;
       Rij();
@@ -121,23 +123,31 @@ void loop() {
 
 //-------------------------------------Methodes automatisch rijden----------------------------------------
 
-void RechtsKijken20(long waarde){
-  Serial.println(1)
-  delay(500);
+void RechtsKijken20(){
+  rechtsKijken20 = false;
+  long waarde = Distance();
+  Serial.println(waarde);
+  Serial.println(1);
+  delay(2000);  
   if (waarde > 20){ linksKijken20 = true;  }
 }  
 
-void LinksKijken20(long waarde) {
+void LinksKijken20() {
+  long waarde = Distance();
+  Serial.println(waarde);
   linksKijken20 = false;
   Serial.println(2);
-  delay(500);
-  if (waarde > 20) { Serial.println(0);}
+  delay(2000);
+  if (waarde > 20) { Serial.println(0); delay(2000);}
 }
 
-void RechtsKijken (long waarde) {
-  linksKijken = true;
+void RechtsKijken () {
+  rechtsKijken = false;
+  rechtsKijken20 = true;
+  long waarde = Distance();
+  Serial.println(waarde);
   Serial.println(3);
-  delay(500);
+  delay(2000);
 
   if (waarde > 20){  
     Snelheid = 1500;
@@ -146,16 +156,17 @@ void RechtsKijken (long waarde) {
     delay(1000);
     Stop();  
   } else {
-    Serial.println(4);
     linksKijken = true;
   }  
   
 }
 
-void LinksKijken(long waarde) {
+void LinksKijken() {
+  long waarde = Distance();
+  Serial.println(waarde);
   linksKijken = false;
   Serial.println(4);
-  delay(500);
+  delay(2000);
 
   if (waarde > 20){  
     Snelheid = 1500;
@@ -290,33 +301,33 @@ void Rij() {
 
 //----------------------------------------------------------------DISTANCE-------------------------------------------------------------------------------------------------
 long Distance() { // meet de afstand van de sensor
- 
- long duration, distance;                  // Duration used to calculate distance
   
- digitalWrite(trigPin, LOW); 
- delayMicroseconds(2); 
-
- digitalWrite(trigPin, HIGH);
- delayMicroseconds(10); 
  
- digitalWrite(trigPin, LOW);
- duration = pulseIn(echoPin, HIGH);
- 
- //Calculate the distance (in cm) based on the speed of sound.
- distance = duration/58.2;
- 
- if (distance >= maximumRange || distance <= minimumRange){
- /* Send a negative number to computer and Turn LED ON 
- to indicate "out of range" */
-  // Serial.println("-1");
-   digitalWrite(timeOutPin, LOW);
- }
- else {
- /* Send the distance to the computer using Serial protocol, and
- turn LED OFF to indicate successful reading. */
-   //Serial.println(distance);
- }
+  long duration, distance;                  // Duration used to calculate distance
   digitalWrite(timeOutPin, HIGH);
+  digitalWrite(trigPin, LOW); 
+  delayMicroseconds(2); 
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10); 
+ 
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+ 
+  //Calculate the distance (in cm) based on the speed of sound.
+  distance = duration/58.2;
+ 
+  if (distance >= maximumRange || distance <= minimumRange){
+    /* Send a negative number to computer and Turn LED ON 
+    to indicate "out of range" */
+    // Serial.println("-1");
+    digitalWrite(timeOutPin, LOW);
+  }
+  else { 
+    /* Send the distance to the computer using Serial protocol, and
+    turn LED OFF to indicate successful reading. */
+    //Serial.println(distance);
+  }
   return distance;
 }
 

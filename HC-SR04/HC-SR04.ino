@@ -1,9 +1,9 @@
 
-#define echoPin 11 // Echo Pin
-#define trigPin 12 // Trigger Pin
+#define echoPin A0 // Echo Pin
+#define trigPin A1 // Trigger Pin
 #define LEDPin 13 // Onboard LED
 
-int trans = 5; //analog
+#define trans A5 //analog
 
 int maximumRange = 200; // Maximum range needed
 int minimumRange = 0; // Minimum range needed

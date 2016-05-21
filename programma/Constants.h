@@ -26,7 +26,7 @@ bool achteruitRijden= LOW;
 
 bool linksKijken = LOW;
 bool linksKijken20 = LOW;
-bool rechtsKijken = HIGH
+bool rechtsKijken = HIGH;
 bool rechtsKijken20 = LOW;
 
 
