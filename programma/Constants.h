@@ -13,8 +13,8 @@ int LledState = LOW;                      //de status van de linker led
 int hoekServo = 35;                       // de hoek die de servo steeds opschuift
 int hoekServoRondkijken = 90;             //de maximale hoek van de servo
 
-long rechtseafstand  = -1;
-long linkseafstand = -1;
+long rechtseAfstand  = -1;
+long linkseAfstand = -1;
 
 unsigned long previousMillisServo = 0;    // slaagt de laatste tijd op waar servo geupdate was
 const long intervalServo = 1000;          // interval van de servo

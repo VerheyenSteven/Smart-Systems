@@ -63,39 +63,43 @@ void loop() {
     if (reader < 20 && reader > 0){
 
       if (reader < 10 && reader > 0){
-        Stop();
-        rechtseafstand = RechtsKijken();
+        Stoop();
+        rechtseAfstand = RechtsKijken();
         
-        if (rechtseafstand> 20){
+        if (rechtseAfstand> 20){
           RechtsDraaien();
-        }else{
-         linkseafstand = LinksKijken();
-         if (linkseafstand>20){
+        } 
+        else {
+         linkseAfstand = LinksKijken();
+         if (linkseAfstand>20){
           LinksDraaien();
-          }else{
+          } 
+          else {
             AchteruitRijden;
           }
         }
         Serial.println(0);
-        rechtseafstand = -1;
-        linkseafstand = -1;
+        rechtseAfstand = -1;
+        linkseAfstand = -1;
 
-      } else {
-            Stop();
-            rechtseafstand = RechtsKijken20();
-            linkseafstand = LinksKijken20();
+      } 
+      else {
+            Stoop();
 
-        if ( rechtseafstand >= 0 && linkseafstand >= 0){         
-            
-           
-            if( rechtseafstand <20 || linkseafstand < 20){
-              if(rechtseafstand< linkseafstand){
+          if (rechtseAfstand <= 0 && linkseAfstand <= 0){  
+            rechtseAfstand = RechtsKijken20();
+            linkseAfstand = LinksKijken20();
+          }
+         
+            if( rechtseAfstand < 20 || linkseAfstand < 20){
+              if(rechtseAfstand < linkseAfstand){
                   Serial.println(1);
               }     
-            }else{
+            }
+            else {
               Serial.println(0);
             }
-        }
+        
 
         Snelheid = 1600;
         Stuur = 1500;
@@ -167,7 +171,7 @@ int RechtsDraaien(){
     Stuur = 1023;
     Rij();
     delay(1000);
-    Stop();  
+    Stoop();  
  }
 
 
@@ -184,7 +188,7 @@ void LinksDraaien(){
     Stuur = 2023;
     Rij();
     delay(1000);
-    Stop();  
+    Stoop();  
 }
 
 void AchteruitRijden(){
@@ -192,10 +196,10 @@ void AchteruitRijden(){
   Stuur = 2023;
   Rij();
   delay(2000);
-  Stop();
+  Stoop();
 }
 
-void Stop(){
+void Stoop(){
   Snelheid = 1500;
   Stuur = 1500;
   Rij();
@@ -209,7 +213,7 @@ void Draaien90() {
   else { Stuur = 1023; rechtsDraaien = true; }
   Rij();
   delay(1000);
-  Stop();
+  Stoop();
 }
 
 void Links30() { 
@@ -217,10 +221,10 @@ void Links30() {
   Stuur = 2023;  
   Rij();
   delay(500);
-  StopLinks();  
+  StoopLinks();  
 }
 
-void StopLinks() {
+void StoopLinks() {
   Snelheid = 1500;
   Stuur = 1500;
   Rij();
@@ -264,7 +268,7 @@ void Rij() {
       analogWrite(LmotorB,linksePWM);
       break;
   
-    case 1:                                                 // Linkse motor stopt.
+    case 1:                                                 // Linkse motor Stoopt.
       analogWrite(LmotorA,linksePWM);
       analogWrite(LmotorB,linksePWM);
       break;
@@ -282,7 +286,7 @@ void Rij() {
       analogWrite(RmotorB,rechtsePWM);
       break;
   
-    case 1:                                                 // Rechtse motor stopt. 
+    case 1:                                                 // Rechtse motor Stoopt. 
       analogWrite(RmotorA,rechtsePWM);
       analogWrite(RmotorB,rechtsePWM);
       break;
@@ -297,13 +301,16 @@ void Rij() {
 
 //----------------------------------------------------------------DISTANCE-------------------------------------------------------------------------------------------------
 int getDistance() {
-  while (reader == 0)
-  {
+
+    
+  int count = 0;
+  while (count <= 5 && reader == 201 || reader == 0) {
+    count++;
     if(Serial.available()>1){
       reader = Serial.parseInt();
       delay(2);
     }
-  }
+  }  
   return  reader;
 }
 
