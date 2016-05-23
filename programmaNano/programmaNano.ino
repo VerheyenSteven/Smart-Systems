@@ -18,6 +18,8 @@ int coilb1 = 8;
 int coilb2 = 9;
 int enable = 10;
 
+int draainaarbeneden = 40;
+int positie = 0;
 
 int maximumRange = 200;                   // Maximum range needed
 int minimumRange = 0;                     // Minimum range needed
@@ -57,9 +59,53 @@ void loop(){
     
      if (currentMillis - previousMillis >= interval) {
         Distance();
+            if(draainaarbeneden>0){
+              
+        
+              switch(positie){
+                case 0:
+                  a1Enb2();
+                  positie++;
+                  break;
+                case 1:
+                  b2();
+                  positie++;
+                  break;
+                case 2:
+                  b2Ena2();
+                  positie++;
+                  break;
+                case 3:
+                  a2();
+                  positie++;
+                  break;
+                case 4:
+                  a2Enb1();
+                  positie++;
+                  break;
+                case 5:
+                  b1();
+                  positie++;
+                  break;
+                case 6:
+                  b1Ena1();
+                  positie++;
+                  break;
+                case 7:
+                  a1();
+                  positie = 0;
+                  draainaarbeneden--;
+                  break;
+              }
+              
+            }
         previousMillis = currentMillis;
-     }
-    }  
+     
+    }
+
+
+
+   
 }
 
 void Distance() { // meet de afstand van de sensor
@@ -92,65 +138,62 @@ void Distance() { // meet de afstand van de sensor
   Serial.println(distance);
 }
 
-void 1draaiNaarBeneden(){
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+10) {
+
+
+void a1Enb2(){
     digitalWrite(coila1, HIGH);
     digitalWrite(coila2, LOW);
     digitalWrite(coilb1, LOW);
     digitalWrite(coilb2, HIGH);
-  }
-
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+10 && currentMillis - previousMillisStappenmotor < intervalStappenmotor+20) {
-  
-    digitalWrite(coila1, LOW);
-    digitalWrite(coila2, LOW);
-    digitalWrite(coilb1, LOW);
-    digitalWrite(coilb2, HIGH);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+20 && currentMillis - previousMillisStappenmotor < intervalStappenmotor+30) {
-
-    digitalWrite(coila1, LOW);
-    digitalWrite(coila2, HIGH);
-    digitalWrite(coilb1, LOW);
-    digitalWrite(coilb2, HIGH);
-
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+30 && currentMillis - previousMillisStappenmotor < intervalStappenmotor+40) {
-
-    digitalWrite(coila1, LOW);
-    digitalWrite(coila2, HIGH);
-    digitalWrite(coilb1, LOW);
-    digitalWrite(coilb2, LOW);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+40&& currentMillis - previousMillisStappenmotor < intervalStappenmotor+50) {
-  
-    digitalWrite(coila1, LOW);
-    digitalWrite(coila2, HIGH);
-    digitalWrite(coilb1, HIGH);
-    digitalWrite(coilb2, LOW);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+50 && currentMillis - previousMillisStappenmotor < intervalStappenmotor+60) {
-
-    digitalWrite(coila1, LOW);
-    digitalWrite(coila2, LOW);
-    digitalWrite(coilb1, HIGH);
-    digitalWrite(coilb2, LOW);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+60 && currentMillis - previousMillisStappenmotor < intervalStappenmotor+70) {
-
-    digitalWrite(coila1, HIGH);
-    digitalWrite(coila2, LOW);
-    digitalWrite(coilb1, HIGH);
-    digitalWrite(coilb2, LOW);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+70) {
-  previousMillisStappenmotor = currentMillis;
-    digitalWrite(coila1, HIGH);
-    digitalWrite(coila2, LOW);
-    digitalWrite(coilb1, LOW);
-    digitalWrite(coilb2, LOW);
-  }
 }
+
+void b2(){
+    digitalWrite(coila1, LOW);
+    digitalWrite(coila2, LOW);
+    digitalWrite(coilb1, LOW);
+    digitalWrite(coilb2, HIGH);
+}
+void b2Ena2(){
+    digitalWrite(coila1, LOW);
+    digitalWrite(coila2, HIGH);
+    digitalWrite(coilb1, LOW);
+    digitalWrite(coilb2, HIGH);
+}
+void a2(){
+    digitalWrite(coila1, LOW);
+    digitalWrite(coila2, HIGH);
+    digitalWrite(coilb1, LOW);
+    digitalWrite(coilb2, LOW);
+}
+void a2Enb1(){
+    digitalWrite(coila1, LOW);
+    digitalWrite(coila2, HIGH);
+    digitalWrite(coilb1, HIGH);
+    digitalWrite(coilb2, LOW);
+}
+void b1(){
+    digitalWrite(coila1, LOW);
+    digitalWrite(coila2, LOW);
+    digitalWrite(coilb1, HIGH);
+    digitalWrite(coilb2, LOW);
+}
+void b1Ena1(){
+    digitalWrite(coila1, HIGH);
+    digitalWrite(coila2, LOW);
+    digitalWrite(coilb1, HIGH);
+    digitalWrite(coilb2, LOW);
+}
+void a1(){
+    digitalWrite(coila1, HIGH);
+    digitalWrite(coila2, LOW);
+    digitalWrite(coilb1, LOW);
+    digitalWrite(coilb2, LOW);
+}
+
+
+
+
+
 
 void 1draaiNaarBoven(){
   if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+10) {
