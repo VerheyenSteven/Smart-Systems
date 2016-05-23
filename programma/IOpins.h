@@ -7,7 +7,9 @@ int LmotorB = 6;            // Left  motor H bridge, input B
 int RmotorA = 9;             // Right motor H bridge, input A
 int RmotorB = 10;            // Right motor H bridge, input B
 
-int servopin = A2; // servo op pin 3
+int Achteruit = A0;
+int Roses = A1;
+int Vooruit = A2;
 
 bool beginLeft = true;
 

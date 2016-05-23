@@ -18,6 +18,14 @@ void setup() {
   pinMode(LmotorB,OUTPUT);
   pinMode(RmotorB,OUTPUT);
 
+  pinMode(Achteruit, OUTPUT);
+  pinMode(Roses, OUTPUT);
+  pinMode(Vooruit, OUTPUT);
+
+ digitalWrite(Achteruit, HIGH);
+ digitalWrite(Roses, HIGH);
+ digitalWrite(Vooruit, HIGH);
+
   radio.begin();                  // voor de RF module te openen
   radio.openReadingPipe(1,pipe);
   radio.startListening();
@@ -41,6 +49,11 @@ void loop() {
       //Serial.print(input[0]);
       
       Snelheid= (input[1])+1000;     // geeft de geontvangde data door aan snelheid.
+      if (Snelheid < 1300) digitalWrite(Achteruit, LOW);
+      else digitalWrite(Achteruit, HIGH);
+
+      if (Snelheid > 1700) digitalWrite(Vooruit, LOW);
+      else digitalWrite(Vooruit, HIGH);
       
       //Serial.print(input[1]);
       //Serial.print("\n");
@@ -49,13 +62,14 @@ void loop() {
       Stuur  = (input[2])+1000;     // geeft de geontvangde data door aan stuur.
       //Serial.print("\n\n"); 
       Rij();
+      
     }
 
     // ------------------------------------------automatisch rijden -------------------------------------------------------
 
   else {
 
-  if (Serial.available() > 1) {
+  /*if (Serial.available() > 1) {
       reader = Serial.parseInt();
       delay(2);
   }
@@ -110,36 +124,38 @@ void loop() {
       Stuur = 1500;
       Rij();
     }
- }
+ }*/
 
 
 //******************************************************ZIGZAG********************************************
-/*
-  if (beginLeft == true) {
-      Links30();    
-  }  
-  else {
-    long reader = Distance();
-    if (reader < 20 && reader > 0){
-      if(reader < 10 && reader > 0){
-        Draaien90();
-      }
-      else {
-        Snelheid = 1600;
+   if (Serial.available() > 1) {
+        reader = Serial.parseInt();
+        delay(2);
+    }
+    
+    if (beginLeft == true) {
+        Links30();
+        digitalWrite(Roses, LOW);    
+    }  
+    else {
+      long reader = getDistance();
+      if (reader < 20 && reader > 0){
+        if(reader < 10 && reader > 0){
+          Draaien90();
+        }
+        else {
+          Snelheid = 1600;
+          Stuur = 1500;
+          Rij();
+        }
+      } 
+      else {      
+        Snelheid = 1700;
         Stuur = 1500;
         Rij();
       }
-    } 
-    else {      
-      Snelheid = 1700;
-      Stuur = 1500;
-      Rij();
     }
   }
-}
-
-    //Serial.println(Stuur);
-    //Serial.println(Snelheid);   */
 }
 
 //-------------------------------------Methodes automatisch rijden----------------------------------------
