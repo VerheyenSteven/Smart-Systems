@@ -5,7 +5,7 @@ int reader;
 unsigned long previousMillis = 0;        
 unsigned long previousMillisStappenmotor = 0;        
 
-const long interval = 50;           
+const long interval = 20;           
 const long intervalStappenmotor = 10;   
 
 #define echoPin 5          // Echo Pin
@@ -36,11 +36,11 @@ void loop(){
       delay(2);
   }
   
-  if (reader == 0) { myservo.write(80);  delay(250); reader = -1; }
-  else if (reader == 1) { myservo.write(60); delay(250); reader = -1;}
-  else if (reader == 2) { myservo.write(100); delay(250); reader = -1; }
-  else if (reader == 3) { myservo.write(0); delay(550); reader = -1; }
-  else if (reader == 4) { myservo.write(180); delay(550); reader = -1; }
+  if (reader == 0) { myservo.write(80);  delay(500); reader = -1; }
+  else if (reader == 1) { myservo.write(60); delay(500); reader = -1;}
+  else if (reader == 2) { myservo.write(100); delay(500); reader = -1; }
+  else if (reader == 3) { myservo.write(0); delay(1000); reader = -1; }
+  else if (reader == 4) { myservo.write(180); delay(1000); reader = -1; }
   else{
     
      if (currentMillis - previousMillis >= interval) {
