@@ -5,8 +5,8 @@ int reader;
 unsigned long previousMillis = 0;        
 unsigned long previousMillisStappenmotor = 0;        
 
-const long interval = 50;           
-const long intervalStappenmotor = 50;   
+const long interval = 20;           
+const long intervalStappenmotor = 10;   
 
 #define echoPin 5          // Echo Pin
 #define trigPin 4          // Trigger Pin
@@ -36,11 +36,11 @@ void loop(){
       delay(2);
   }
   
-  if (reader == 0) { myservo.write(80);  delay(250); reader = -1; }
-  else if (reader == 1) { myservo.write(60); delay(250); reader = -1;}
-  else if (reader == 2) { myservo.write(100); delay(250); reader = -1; }
-  else if (reader == 3) { myservo.write(0); delay(550); reader = -1; }
-  else if (reader == 4) { myservo.write(180); delay(550); reader = -1; }
+  if (reader == 0) { myservo.write(80);  delay(500); reader = -1; }
+  else if (reader == 1) { myservo.write(60); delay(500); reader = -1;}
+  else if (reader == 2) { myservo.write(100); delay(500); reader = -1; }
+  else if (reader == 3) { myservo.write(0); delay(1000); reader = -1; }
+  else if (reader == 4) { myservo.write(180); delay(1000); reader = -1; }
   else{
     
      if (currentMillis - previousMillis >= interval) {
@@ -81,60 +81,57 @@ void Distance() { // meet de afstand van de sensor
 }
 
 void 1draaiNaarBeneden(){
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-    previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+10) {
     digitalWrite(coila1, HIGH);
     digitalWrite(coila2, LOW);
     digitalWrite(coilb1, LOW);
     digitalWrite(coilb2, HIGH);
-    delay(10);
   }
 
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-  previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+10 && currentMillis - previousMillisStappenmotor < intervalStappenmotor+20) {
   
     digitalWrite(coila1, LOW);
     digitalWrite(coila2, LOW);
     digitalWrite(coilb1, LOW);
     digitalWrite(coilb2, HIGH);
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-  previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+20 && currentMillis - previousMillisStappenmotor < intervalStappenmotor+30) {
+
     digitalWrite(coila1, LOW);
     digitalWrite(coila2, HIGH);
     digitalWrite(coilb1, LOW);
     digitalWrite(coilb2, HIGH);
-    delay(10);
+
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-  previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+30 && currentMillis - previousMillisStappenmotor < intervalStappenmotor+40) {
+
     digitalWrite(coila1, LOW);
     digitalWrite(coila2, HIGH);
     digitalWrite(coilb1, LOW);
     digitalWrite(coilb2, LOW);
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-  previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+40&& currentMillis - previousMillisStappenmotor < intervalStappenmotor+50) {
+  
     digitalWrite(coila1, LOW);
     digitalWrite(coila2, HIGH);
     digitalWrite(coilb1, HIGH);
     digitalWrite(coilb2, LOW);
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-  previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+50 && currentMillis - previousMillisStappenmotor < intervalStappenmotor+60) {
+
     digitalWrite(coila1, LOW);
     digitalWrite(coila2, LOW);
     digitalWrite(coilb1, HIGH);
     digitalWrite(coilb2, LOW);
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-  previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+60 && currentMillis - previousMillisStappenmotor < intervalStappenmotor+70) {
+
     digitalWrite(coila1, HIGH);
     digitalWrite(coila2, LOW);
     digitalWrite(coilb1, HIGH);
     digitalWrite(coilb2, LOW);
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor+70) {
   previousMillisStappenmotor = currentMillis;
     digitalWrite(coila1, HIGH);
     digitalWrite(coila2, LOW);
@@ -144,50 +141,50 @@ void 1draaiNaarBeneden(){
 }
 
 void 1draaiNaarBoven(){
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-  previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+10) {
+
     digitalWrite(coila1, HIGH);
     digitalWrite(coila2, LOW);
     digitalWrite(coilb1, LOW);
     digitalWrite(coilb2, LOW);
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-  previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+20) {
+
     digitalWrite(coila1, HIGH);
     digitalWrite(coila2, LOW);
     digitalWrite(coilb1, HIGH);
     digitalWrite(coilb2, LOW);
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-  previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+30) {
+
     digitalWrite(coila1, LOW);
     digitalWrite(coila2, LOW);
     digitalWrite(coilb1, HIGH);
     digitalWrite(coilb2, LOW);
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-    previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+40) {
+
     digitalWrite(coila1, LOW);
     digitalWrite(coila2, HIGH);
     digitalWrite(coilb1, HIGH);
     digitalWrite(coilb2, LOW);
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-    previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+50) {
+
     digitalWrite(coila1, LOW);
     digitalWrite(coila2, HIGH);
     digitalWrite(coilb1, LOW);
     digitalWrite(coilb2, LOW);
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-    previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+60) {
+
     digitalWrite(coila1, LOW);
     digitalWrite(coila2, HIGH);
     digitalWrite(coilb1, LOW);
     digitalWrite(coilb2, HIGH);
   }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-    previousMillisStappenmotor = currentMillis;
+  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+70) {
+
     digitalWrite(coila1, LOW);
     digitalWrite(coila2, LOW);
     digitalWrite(coilb1, LOW);
