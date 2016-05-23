@@ -60,7 +60,7 @@ void loop(){
      if (currentMillis - previousMillis >= interval) {
         Distance();
             if(draainaarbeneden>0){
-              
+              digitalWrite(enable, HIGH);
         
               switch(positie){
                 case 0:
@@ -98,6 +98,8 @@ void loop(){
                   break;
               }
               
+            }else{
+              digitalWrite(enable, LOW);
             }
         previousMillis = currentMillis;
      
