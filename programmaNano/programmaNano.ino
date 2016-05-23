@@ -12,6 +12,13 @@ const long intervalStappenmotor = 10;
 #define trigPin 4          // Trigger Pin
 #define timeOutPin A5       //De pin om de sensor aan en uit te doen
 
+int coila1 = 6;
+int coila2 = 7;
+int coilb1 = 8;
+int coilb2 = 9;
+int enable = 10;
+
+
 int maximumRange = 200;                   // Maximum range needed
 int minimumRange = 0;                     // Minimum range needed
 
@@ -26,6 +33,11 @@ void setup(){
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(timeOutPin, OUTPUT);
+  pinMode(coila1, OUTPUT);
+  pinMode(coila2, OUTPUT);
+  pinMode(coilb1, OUTPUT);
+  pinMode(coilb2, OUTPUT);
+  pinMode(enable, OUTPUT);
 }
 
 void loop(){
