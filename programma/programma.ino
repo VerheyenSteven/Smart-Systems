@@ -22,9 +22,6 @@ void setup() {
   pinMode(Roses, OUTPUT);
   pinMode(Vooruit, OUTPUT);
 
- digitalWrite(Achteruit, HIGH);
- digitalWrite(Roses, HIGH);
- digitalWrite(Vooruit, HIGH);
 
   radio.begin();                  // voor de RF module te openen
   radio.openReadingPipe(1,pipe);
@@ -35,9 +32,11 @@ void loop() {
    Snelheid = 1500;             // zet snelheid in de center positie
    Stuur = 1500;                // zet stuur in de center positie
    currentMillis = millis(); // wordt gebruikt voor verschillende time-outs
+
    
 
-  if (radio.available() )       // kijkt of er een RF signaal is
+
+ if (radio.available() )       // kijkt of er een RF signaal is
   {
     //Serial.println("Het werkt");
       
@@ -135,12 +134,14 @@ void loop() {
     
     if (beginLeft == true) {
         Links30();
-        digitalWrite(Roses, LOW);    
+        digitalWrite(Roses, LOW);
+        Serial.println(6);
+           
     }  
     else {
       long reader = getDistance();
-      if (reader < 20 && reader > 0){
-        if(reader < 10 && reader > 0){
+      if (reader < 30 && reader > 0){
+        if(reader < 20 && reader > 0){
           Draaien90();
         }
         else {
@@ -223,8 +224,8 @@ void Stoop(){
 
 void Draaien90() {
   Snelheid = 1500;
-  if (rechtsDraaien == true) {Stuur = 2023; rechtsDraaien = false; }
-  else { Stuur = 1023; rechtsDraaien = true; }
+  if (rechtsDraaien == true) {Stuur = 2023; rechtsDraaien = false; Serial.println(6);}
+  else { Stuur = 1023; rechtsDraaien = true; Serial.println(7); }
   Rij();
   delay(1000);
   Stoop();

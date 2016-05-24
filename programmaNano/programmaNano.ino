@@ -3,7 +3,9 @@ int reader;
 // Generally, you should use "unsigned long" for variables that hold time
 // The value will quickly become too large for an int to store
 unsigned long previousMillis = 0;              
-
+bool stippenlijn = false;
+bool boven= false;
+bool beneden = true;
 const long interval = 10;           
 
 #define echoPin 5          // Echo Pin
@@ -17,6 +19,7 @@ int coilb2 = 9;
 int enable = 10;
 
 int draainaarbeneden = 0;
+int middenpuntpositie = 0;
 int draainaarboven =0;
 int positie = 0;
 
@@ -54,11 +57,28 @@ void loop(){
   else if (reader == 2) { myservo.write(100); delay(500); reader = -1; }
   else if (reader == 3) { myservo.write(0); delay(1000); reader = -1; }
   else if (reader == 4) { myservo.write(180); delay(1000); reader = -1; }
-  else if (reader == 6) { myservo.write(180); draainaarbeneden = 10; reader = -1; }
-  else if (reader == 7) { myservo.write(180); draainaarboven =10; reader = -1; }
+  else if (reader == 6) {  beneden = true; stippenlijn = false; reader = -1; }
+  else if (reader == 7) {stippenlijn = true ; beneden = false; reader = -1; }
   else{
+
+  if(beneden){
+
+    draainaarbeneden = 10 - middenpuntpositie;
+    beneden=false;
+
+ }
+
+  if(stippenlijn && !beneden){
+    if(middenpuntpositie<=0){
+       draainaarbeneden = 10 - middenpuntpositie;
+    }
+    if(middenpuntpositie>=10){
+      draainaarboven = middenpuntpositie;
+    }
+  }
     
      if (currentMillis - previousMillis >= interval) {
+
         Distance();
             if(draainaarboven>0){
               digitalWrite(enable, HIGH);
@@ -96,6 +116,7 @@ void loop(){
                   a1();
                   positie = 0;
                   draainaarboven--;
+                  middenpuntpositie--;
                   break;
               }
               
@@ -135,6 +156,7 @@ void loop(){
                   a1Enb2();
                   positie = 0;
                   draainaarbeneden--;
+                  middenpuntpositie++;
                   break;
               }
               
