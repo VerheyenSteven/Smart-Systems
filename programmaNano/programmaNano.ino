@@ -2,11 +2,9 @@
 int reader;
 // Generally, you should use "unsigned long" for variables that hold time
 // The value will quickly become too large for an int to store
-unsigned long previousMillis = 0;        
-unsigned long previousMillisStappenmotor = 0;        
+unsigned long previousMillis = 0;              
 
-const long interval = 20;           
-const long intervalStappenmotor = 10;   
+const long interval = 10;           
 
 #define echoPin 5          // Echo Pin
 #define trigPin 4          // Trigger Pin
@@ -18,7 +16,8 @@ int coilb1 = 8;
 int coilb2 = 9;
 int enable = 10;
 
-int draainaarbeneden = 40;
+int draainaarbeneden = 0;
+int draainaarboven =0;
 int positie = 0;
 
 int maximumRange = 200;                   // Maximum range needed
@@ -55,11 +54,13 @@ void loop(){
   else if (reader == 2) { myservo.write(100); delay(500); reader = -1; }
   else if (reader == 3) { myservo.write(0); delay(1000); reader = -1; }
   else if (reader == 4) { myservo.write(180); delay(1000); reader = -1; }
+  else if (reader == 6) { myservo.write(180); draainaarbeneden = 10; reader = -1; }
+  else if (reader == 7) { myservo.write(180); draainaarboven =10; reader = -1; }
   else{
     
      if (currentMillis - previousMillis >= interval) {
         Distance();
-            if(draainaarbeneden>0){
+            if(draainaarboven>0){
               digitalWrite(enable, HIGH);
         
               switch(positie){
@@ -94,23 +95,61 @@ void loop(){
                 case 7:
                   a1();
                   positie = 0;
+                  draainaarboven--;
+                  break;
+              }
+              
+            }else if(draainaarbeneden>0){
+              digitalWrite(enable, HIGH);
+        
+              switch(positie){
+                case 0:
+                  a1();
+                  positie ++;
+                  break;
+                case 1:
+                  b1Ena1();
+                  positie++;
+                  break;
+                case 2:
+                  b1();
+                  positie++;
+                  break;
+                case 3:
+                  a2Enb1();
+                  positie++;
+                  break;
+                case 4:
+                  a2();
+                  positie++;
+                  break;
+                case 5:
+                  b2Ena2();
+                  positie++;
+                  break;
+                case 6:
+                  b2();
+                  positie++;
+                  break;
+                case 7:
+                  a1Enb2();
+                  positie = 0;
                   draainaarbeneden--;
                   break;
               }
               
-            }else{
+            }
+            else{
               digitalWrite(enable, LOW);
             }
         previousMillis = currentMillis;
      
     }
-
-
-
+  }
    
 }
 
-void Distance() { // meet de afstand van de sensor
+void Distance(){ // meet de afstand van de sensor
  
   long duration, distance;                  // Duration used to calculate distance
   digitalWrite(timeOutPin, HIGH);
@@ -193,66 +232,4 @@ void a1(){
 }
 
 
-
-
-
-
-void 1draaiNaarBoven(){
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+10) {
-
-    digitalWrite(coila1, HIGH);
-    digitalWrite(coila2, LOW);
-    digitalWrite(coilb1, LOW);
-    digitalWrite(coilb2, LOW);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+20) {
-
-    digitalWrite(coila1, HIGH);
-    digitalWrite(coila2, LOW);
-    digitalWrite(coilb1, HIGH);
-    digitalWrite(coilb2, LOW);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+30) {
-
-    digitalWrite(coila1, LOW);
-    digitalWrite(coila2, LOW);
-    digitalWrite(coilb1, HIGH);
-    digitalWrite(coilb2, LOW);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+40) {
-
-    digitalWrite(coila1, LOW);
-    digitalWrite(coila2, HIGH);
-    digitalWrite(coilb1, HIGH);
-    digitalWrite(coilb2, LOW);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+50) {
-
-    digitalWrite(coila1, LOW);
-    digitalWrite(coila2, HIGH);
-    digitalWrite(coilb1, LOW);
-    digitalWrite(coilb2, LOW);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+60) {
-
-    digitalWrite(coila1, LOW);
-    digitalWrite(coila2, HIGH);
-    digitalWrite(coilb1, LOW);
-    digitalWrite(coilb2, HIGH);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor && currentMillis - previousMillisStappenmotor < intervalStappenmotor+70) {
-
-    digitalWrite(coila1, LOW);
-    digitalWrite(coila2, LOW);
-    digitalWrite(coilb1, LOW);
-    digitalWrite(coilb2, HIGH);
-  }
-  if (currentMillis - previousMillisStappenmotor >= intervalStappenmotor) {
-    previousMillisStappenmotor = currentMillis;
-    digitalWrite(coila1, HIGH);
-    digitalWrite(coila2, LOW);
-    digitalWrite(coilb1, LOW);
-    digitalWrite(coilb2, HIGH);
-  }
-}
 
