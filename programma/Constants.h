@@ -1,6 +1,6 @@
 
 
-int reader = 0;
+char reader = 0;
 
 int pos = 90;                               // variable to store the servo position 
 int count = 0; 
@@ -24,7 +24,7 @@ const long intervalSensor = 300;          //interval sensor
 bool vooruitRijden = LOW;                 // de bools die worden aangepast van de RF, hierdoor zal de auto rijden of andere manuevers maken
 
 bool vooruitKijken = HIGH;
-bool rechtsDraaien = LOW; //hier gaat het fout
+bool rechtsDraaien = false; //hier gaat het fout
 
 int linksemodus=1;                         // 0=achterwaards, 1=rem, 2=voorwaards.
 int rechtsemodus=1;                        // 0=achterwaards, 1=rem, 2=voorwaards.
@@ -51,6 +51,8 @@ int input[3];
 int done;
 
 unsigned long currentMillis;
+
+bool myserialuit = false;
 
 
 
