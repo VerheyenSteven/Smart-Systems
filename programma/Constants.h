@@ -1,30 +1,11 @@
-
+int RadioZekerUit=0;
 
 char reader = 0;
-
-int pos = 90;                               // variable to store the servo position 
-int count = 0; 
 
 unsigned long previousMillis = 0;         // will store last time LED was updated
 const long interval = 250;                // interval at which to blink (milliseconds)
 int RledState = LOW;                      //de status van de rechter led
 int LledState = LOW;                      //de status van de linker led
-
-int hoekServo = 35;                       // de hoek die de servo steeds opschuift
-int hoekServoRondkijken = 90;             //de maximale hoek van de servo
-
-long rechtseAfstand  = -1;
-long linkseAfstand = -1;
-
-unsigned long previousMillisServo = 0;    // slaagt de laatste tijd op waar servo geupdate was
-const long intervalServo = 1000;          // interval van de servo
-unsigned long previousMillisSensor =0;    // slaagt de laatste tijd op waar sensor geupdate was
-const long intervalSensor = 300;          //interval sensor
-
-bool vooruitRijden = LOW;                 // de bools die worden aangepast van de RF, hierdoor zal de auto rijden of andere manuevers maken
-
-bool vooruitKijken = HIGH;
-bool rechtsDraaien = false; //hier gaat het fout
 
 int linksemodus=1;                         // 0=achterwaards, 1=rem, 2=voorwaards.
 int rechtsemodus=1;                        // 0=achterwaards, 1=rem, 2=voorwaards.
@@ -53,6 +34,4 @@ int done;
 unsigned long currentMillis;
 
 bool myserialuit = false;
-
-
 
