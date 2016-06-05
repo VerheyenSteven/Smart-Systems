@@ -204,7 +204,7 @@ void automatischrijdenZigZag(){     // de zig zag code
           Serial.println(4);        // Verstuurd om links te draaien
 
           schuinKijken = false; 
-          myservo.write(80);      / zet servo terug in het midden
+          myservo.write(80);      // zet servo terug in het midden
           afstand=0;
           delay(4000);
           stippenlijn = true ;      // zorgt dat er terug een stippellijn patroon wordt getekend
