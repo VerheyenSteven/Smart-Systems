@@ -5,24 +5,21 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-//#include <SoftwareSerial.h>
-//SoftwareSerial mySerial(3, 2); // RX, TX , maakt een serieele poort aan op pin 3 en 2
-int RadioZekerUit=0;
 
 
 /*-----( Declare objects )-----*/
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
-bool schuinKijken = false;
+
 void setup() {
 
-  Serial.begin(9600);
-  //mySerial.begin(9600); 
+  Serial.begin(9600);              // begin met de serieele communicatie
+   
   pinMode(LmotorA,OUTPUT);        // zet de pinnen voor de H brug op output
   pinMode(RmotorA,OUTPUT);
   pinMode(LmotorB,OUTPUT);
   pinMode(RmotorB,OUTPUT);
 
-  pinMode(Achteruit, OUTPUT);
+  pinMode(Achteruit, OUTPUT);     //pinnen voor de mp3 trigger
   pinMode(Roses, OUTPUT);
   pinMode(Vooruit, OUTPUT);
 
@@ -35,53 +32,46 @@ void setup() {
 void loop() {
    Snelheid = 1500;             // zet snelheid in de center positie
    Stuur = 1500;                // zet stuur in de center positie
-   currentMillis = millis(); // wordt gebruikt voor verschillende time-outs
+   currentMillis = millis();    // wordt gebruikt voor verschillende time-outs
 
    
 
 
  if (radio.available() )       // kijkt of er een RF signaal is
   {
-    RadioZekerUit = 0;
-    if(!myserialuit){
+    RadioZekerUit = 0;         //Zorgt ervoor dat je nog in de radio if blijft
+    if(!myserialuit){          //zet de serial uit, voor extra performantie
       Serial.end();
       myserialuit = true;
     }
    
     // Fetch the data payload
       
-      done = radio.read(input, sizeof(input));
+      done = radio.read(input, sizeof(input));        
       
       Snelheid= (input[1])+1000;     // geeft de geontvangde data door aan snelheid.
-      /*if (Snelheid < 1300) digitalWrite(Achteruit, LOW);
-      else digitalWrite(Achteruit, HIGH);*/
 
-      /*if (Snelheid > 1700) digitalWrite(Vooruit, LOW);
-      else digitalWrite(Vooruit, HIGH);*/
       Stuur  = (input[2])+1000;     // geeft de geontvangde data door aan stuur.
-      Rij();
+      Rij();                        //roept de rij methode aan om de motors aan te sturen
      
       
     }
-  else if(RadioZekerUit>3000) {
+  else if(RadioZekerUit>3000) {   //als er geen radio communicatie is ga erin
     
     
-      if(myserialuit){
-        Serial.begin(9600);
+      if(myserialuit){           //als de seriele communicatie uit staat zet deze aan
+        Serial.begin(9600);       
         myserialuit = false;
       }
   
-      if (Serial.available() > 1) {
-        reader = Serial.parseInt();
-        delay(2);
+      if (Serial.available() > 1) {  //leest de seriele communicatie uit
+        reader = Serial.parseInt();    // zet de seriele data om in een int
+        delay(2); 
       }
   
-  
-  
-       Automatichrijden();
+       Automatichrijden();         //al de methodes die kunnen worden aangeroepen door de nano
 
-
-  }else if(RadioZekerUit<3002){
+  }else if(RadioZekerUit<3002){    // zorgt ervoor dat men checkt of er geen radio singalen meer aankomen
        RadioZekerUit ++;
     }
 }
@@ -90,57 +80,62 @@ void loop() {
 
 //*-------------------------------------Methodes automatisch rijden----------------------------------------*/
 void Automatichrijden(){
-    if(reader == 11){
+    if(reader == 11){             //als er een 11 wordt doorgestuurd stop de wagen
       Stoop(); 
-    }else if(reader == 2){
+    }else if(reader == 2){        //als er een 2 wordt doorgestuurd laat de wagen traag rijden
       Snelheid = 1650;
       Stuur = 1500;
       Rij();  
-    }else if(reader == 5){
+    }else if(reader == 5){        //als er een 5 wordt doorgestuurd laat de wagen snel rijden
       Snelheid = 1800;
       Stuur = 1500;
       Rij();  
-    }else if(reader == 3){
+    }else if(reader == 3){        //als er een 3 wordt doorgestuurd laat de wagen 90 graden naar rechts draaien
       RechtsDraaien90();
     }
-    else if(reader == 4){
+    else if(reader == 4){         //als er een 4 wordt doorgestuurd laat de wagen naar links draaien
       LinksDraaien90();
+    }else if(reader == 6){        //als er een 6 wordt doorgestuurd draai de wagen volledig rond zijn as
+      Draaien180();
     }else{
-      Stoop();
+      Stoop();                    // als er een onbekende waarde wordt doorgestuurd stop de wagen
     }
 }
 
-void RechtsDraaien90(){ 
+void RechtsDraaien90(){        //methode om rechts te draaien
     Snelheid = 1500;
     Stuur = 2023;
     Rij();
-    delay(1500);
+    delay(2000);
     Stoop(); 
     reader=0; 
     delay(1500);
 }
 
+void Draaien180(){            //methode om rond zijn as te draaien
+    Snelheid = 1500;
+    Stuur = 2023;
+    Rij();
+    delay(3500);
+    Stoop(); 
+    reader=0; 
+    delay(1500);
+}
 
-void LinksDraaien90(){
+void LinksDraaien90(){       //methode om links te draaien
 
     Snelheid = 1500;
     Stuur = 1023;
     Rij();
-    delay(1500);
+    delay(2000);
     Stoop(); 
     reader=0;  
     delay(1500);
 }
 
-void AchteruitRijden(){
-  Snelheid = 1500;
-  Stuur = 2023;
-  Rij();
-  delay(2000);
-  Stoop();
-}
 
-void Stoop(){
+
+void Stoop(){              //methode om de wagen te laten stoppen
   Snelheid = 1500;
   Stuur = 1500;
   Rij();
@@ -148,25 +143,7 @@ void Stoop(){
 
 }
 
-//----------------------------------------------Methodes voor zigzag---------------------------------------
 
-/*void Draaien90() {
-    Snelheid = 1500;
-    if (rechtsDraaien == true) {Stuur = 2023; rechtsDraaien = false;}
-    else { Stuur = 1023; rechtsDraaien = true; }
-    Rij();
-    delay(2000);
-    Stoop();
-    delay(200);
-}*/
-
-void Links30() { 
-  Snelheid = 1500;
-  Stuur = 2023;  
-  Rij();
-  delay(500);
-  Stoop();  
-}
 
 
     //------------------------------------------------------------ Code voor RC inputs. ---------------------------------------------------------
