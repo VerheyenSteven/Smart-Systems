@@ -1,19 +1,16 @@
 #include <Servo.h>
-
+int reader;
+// Generally, you should use "unsigned long" for variables that hold time
+// The value will quickly become too large for an int to store
 unsigned long previousMillis = 0;              
 bool stippenlijn = false;
 bool boven= false;
 bool beneden = true;
-const long interval = 20;    
-
-bool validDistance = false;    
-long afstandwaarde = 0;   
-int count = 0;
-int afstand = 0;
+const long interval = 15;           
 
 #define echoPin 5          // Echo Pin
 #define trigPin 4          // Trigger Pin
-#define timeOutPin 12       //De pin om de sensor aan en uit te doen
+#define timeOutPin A5       //De pin om de sensor aan en uit te doen
 
 int coila1 = 6;
 int coila2 = 7;
@@ -26,7 +23,7 @@ int middenpuntpositie = 0;
 int draainaarboven =0;
 int positie = 0;
 
-int maximumRange = 200;                   // Maximum range needed
+int maximumRange = 60;                   // Maximum range needed
 int minimumRange = 0;                     // Minimum range needed
 
 int rechtseAfstand  = -1;
@@ -41,7 +38,7 @@ Servo myservo;
 void setup(){
   myservo.attach(3);  // attaches the servo on pin 11 to the servo object
   Serial.begin(9600);
-
+  reader = 0;
 
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
@@ -57,15 +54,26 @@ void setup(){
 void loop(){
 
   unsigned long currentMillis = millis();
-
- 
+  if (Serial.available() > 1) {
+      reader = Serial.parseInt();
+      delay(2);
+  }
   
-
+  if (reader == 0) { myservo.write(80);  delay(500); reader = -1; }
+  else if (reader == 1) { myservo.write(60); delay(500); reader = -1;}
+  else if (reader == 2) { myservo.write(100); delay(500); reader = -1; }
+  else if (reader == 3) { myservo.write(0); delay(1000); reader = -1; }
+  else if (reader == 4) { myservo.write(180); delay(1000); reader = -1; }
+  else if (reader == 6) {  beneden = true; stippenlijn = false; reader = -1; }
+  else if (reader == 7) {stippenlijn = true ; beneden = false; reader = -1; }
+  else{
 
   if(beneden){
+
     draainaarbeneden = 10 - middenpuntpositie;
     beneden=false;
-  }
+
+ }
 
   if(stippenlijn && !beneden){
     if(middenpuntpositie<=0){
@@ -79,8 +87,8 @@ void loop(){
   
     
      if (currentMillis - previousMillis >= interval) {
-         
-         automatischrijdenZigZag();
+
+        Distance();
 
        
             if(draainaarboven>0){
@@ -167,8 +175,10 @@ void loop(){
             else{
               digitalWrite(enable, LOW);
             }
-        previousMillis = currentMillis; 
+        previousMillis = currentMillis;
+     
     }
+  }
 
     
 
@@ -287,7 +297,7 @@ int kijken(){
 
 
 
-long Distance(){ // meet de afstand van de sensor
+void Distance(){ // meet de afstand van de sensor
  
   long duration, distance;                  // Duration used to calculate distance
   digitalWrite(timeOutPin, HIGH);
@@ -310,7 +320,12 @@ long Distance(){ // meet de afstand van de sensor
     digitalWrite(timeOutPin, LOW);
   }
 
-  return distance;
+  else { 
+    /* Send the distance to the computer using Serial protocol, and
+    turn LED OFF to indicate successful reading. */
+    //Serial.println(distance);
+  }
+  Serial.println(distance);
 }
 
 int filterDistance() {

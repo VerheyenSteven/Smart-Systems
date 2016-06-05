@@ -1,8 +1,8 @@
 
-#define echoPin A0 // Echo Pin
-#define trigPin A1 // Trigger Pin
+#define echoPin 5 // Echo Pin
+#define trigPin 4 // Trigger Pin
 #define LEDPin 13 // Onboard LED
-#define testPin 5
+
 
 #define trans A5 //analog
 
@@ -20,7 +20,6 @@ void setup() {
  pinMode(echoPin, INPUT);
  pinMode(LEDPin, OUTPUT); // Use LED indicator (if required)
  pinMode(trans, OUTPUT);
- pinMode(testPin, OUTPUT);
  
 }
 
